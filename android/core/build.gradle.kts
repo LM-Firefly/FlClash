@@ -7,11 +7,12 @@ plugins {
 
 android {
     namespace = "com.follow.clash.core"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "28.0.13004108"
 
     defaultConfig {
         minSdk = 21
+        targetSdk = 36
     }
 
     buildTypes {

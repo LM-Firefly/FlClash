@@ -24,8 +24,8 @@ val isRelease = mStoreFile.exists()
 
 android {
     namespace = "com.follow.clash"
-    compileSdk = 35
-    ndkVersion = "28.0.13004108"
+    compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -40,7 +40,7 @@ android {
         applicationId = "com.follow.clash"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
+        versionCode = 2024070916
         versionName = flutter.versionName
     }
 
@@ -70,7 +70,7 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-
+            applicationIdSuffix = ".Firefly"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
