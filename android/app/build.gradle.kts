@@ -40,7 +40,7 @@ android {
         applicationId = "com.follow.clash"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
+        versionCode = 2024070916
         versionName = flutter.versionName
     }
 
@@ -70,7 +70,7 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-
+            applicationIdSuffix = ".Firefly"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
