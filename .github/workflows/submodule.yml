@@ -22,6 +22,12 @@ jobs:
       - name: Checkout and Update submodules
         run: git submodule update --init --recursive --remote --force
 
+      - name: Update Clash.Meta
+        run: |
+          sudo rm -rf core/Clash.Meta
+          git clone -b FlClash https://github.com/LM-Firefly/Clash.Meta.git
+          mv Clash.Meta core/Clash.Meta
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
