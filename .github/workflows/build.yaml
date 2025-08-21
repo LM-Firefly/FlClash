@@ -10,6 +10,11 @@ env:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{secrets.ACTIONS_TOKEN}}
+    outputs:
+      ver: ${{ steps.set-ver.outputs.version }}
+      sver: ${{ steps.set-ver.outputs.sversion }}
     strategy:
       matrix:
         include:
@@ -44,9 +49,13 @@ jobs:
           Add-Content $env:GITHUB_PATH $cargoPath
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
+      - name: Setup timezone
+        uses: szenius/set-timezone@v2.0
+        with:
+          timezoneLinux: "Asia/Shanghai"
 
       - name: Setup Android Signing
         if: startsWith(matrix.platform,'android')
@@ -83,6 +92,14 @@ jobs:
       - name: Setup
         run: dart setup.dart ${{ matrix.platform }} ${{ matrix.arch && format('--arch {0}', matrix.arch) }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }}
 
+      - id: set-ver
+        shell: bash
+        run: |
+          ver=$(grep '^version: ' pubspec.yaml | awk '{print $2}')
+          sver=$(echo "$ver" | cut -d'+' -f1)
+          echo "version=$ver" >> $GITHUB_OUTPUT
+          echo "sversion=$sver" >> $GITHUB_OUTPUT
+
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
@@ -90,86 +107,16 @@ jobs:
           path: ./dist
           overwrite: true
 
-  changelog:
+  publish-release:
     runs-on: ubuntu-latest
     needs: [ build ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: ${{ env.IS_STABLE == 'true' }}
         with:
           fetch-depth: 0
           ref: refs/heads/main
-      - name: Generate
-        if: ${{ env.IS_STABLE == 'true' }}
-        run: |
-          tags=($(git tag --merged $(git rev-parse HEAD) --sort=-creatordate))
-          preTag=$(grep -oP '^## \K.*' CHANGELOG.md | head -n 1)
-          currentTag=""
-          for ((i = 0; i <= ${#tags[@]}; i++)); do
-            if (( i < ${#tags[@]} )); then
-              tag=${tags[$i]}
-            else
-              tag=""
-            fi
-            if [ -n "$currentTag" ]; then
-              if [ "$(echo -e "$currentTag\n$preTag" | sort -V | head -n 1)" == "$currentTag" ]; then
-                break
-              fi
-            fi
-            if [ -n "$currentTag" ]; then
-              echo "## $currentTag" >> NEW_CHANGELOG.md
-              echo "" >> NEW_CHANGELOG.md
-              if [ -n "$tag" ]; then
-                git log --pretty=format:"%B" "$tag..$currentTag" | awk 'NF {print "- " $0} !NF {print ""}' >> NEW_CHANGELOG.md
-              else
-                git log --pretty=format:"%B" "$currentTag" | awk 'NF {print "- " $0} !NF {print ""}' >> NEW_CHANGELOG.md
-              fi
-              echo "" >> NEW_CHANGELOG.md
-            fi
-            currentTag=$tag
-          done
-          cat CHANGELOG.md >> NEW_CHANGELOG.md
-          cat NEW_CHANGELOG.md > CHANGELOG.md
-
-      - name: Commit
-        if: ${{ env.IS_STABLE == 'true' }}
-        run: |
-          git add CHANGELOG.md
-          if ! git diff --cached --quiet; then
-            echo "Commit pushing"
-            git config --local user.email "chen08209@gmail.com"
-            git config --local user.name "chen08209"
-            git commit -m "Update changelog"
-            git push
-            if [ $? -eq 0 ]; then
-              echo "Push succeeded"
-            else
-              echo "Push failed"
-              exit 1
-            fi
-          fi
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  upload:
-    permissions: write-all
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    services:
-      telegram-bot-api:
-        image: aiogram/telegram-bot-api:latest
-        env:
-          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
-          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
-        ports:
-          - 8081:8081
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Download
         uses: actions/download-artifact@v4
@@ -178,82 +125,57 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
 
-      - name: Generate release.md
-        run: |
-          tags=($(git tag --merged $(git rev-parse HEAD) --sort=-creatordate))
-          preTag=$(curl --silent "https://api.github.com/repos/chen08209/FlClash/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")' || echo "")
-          currentTag=""
-          for ((i = 0; i <= ${#tags[@]}; i++)); do
-            if (( i < ${#tags[@]} )); then
-              tag=${tags[$i]}
-            else
-              tag=""
-            fi
-            if [ -n "$currentTag" ]; then
-              if [ "$(echo -e "$currentTag\n$preTag" | sort -V | head -n 1)" == "$currentTag" ]; then
-                break
-              fi
-            fi
-            if [ -n "$currentTag" ]; then
-              if [ -n "$tag" ]; then
-                git log --pretty=format:"%B" "$tag..$currentTag" | awk 'NF {print "- " $0} !NF {print ""}' >> release.md
-              else
-                git log --pretty=format:"%B" "$currentTag" | awk 'NF {print "- " $0} !NF {print ""}' >> release.md
-              fi
-              echo "" >> release.md
-            fi
-            currentTag=$tag
-          done
-
-      - name: Push to telegram
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TAG: ${{ github.ref_name }}
-          RUN_ID: ${{ github.run_id }}
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-          python release_telegram.py
-
-      - name: Patch release.md
-        run: |
-          version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-          sed "s|VERSION|$version|g" ./.github/release_template.md >> release.md
-
       - name: Generate sha256
         if: env.IS_STABLE == 'true'
         run: |
           cd ./dist
           for file in $(find . -type f -not -name "*.sha256"); do
             sha256sum "$file" > "${file}.sha256"
-          done  
+          done
+
+      - name: Release Changelog Builder
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          configurationJson: |
+            {
+              "categories": [
+                {
+                  "title": "## 🚀 Features",
+                  "labels": ["feature", "enhancement"]
+                },
+                {
+                  "title": "## 🐛 Fixes",
+                  "labels": ["fix", "bug"]
+                },
+                {
+                  "title": "## 🧪 Tests",
+                  "labels": ["test"]
+                },
+                {
+                  "title": "## 📦 Other",
+                  "labels": []
+                }
+              ],
+              "template": "\n\n**Download based on your OS:**\n\n<div align=left>\n<table>\n    <thead align=left>\n        <tr>\n            <th>OS</th>\n            <th>Download</th>\n        </tr>\n    </thead>\n    <tbody align=left>\n        <tr>\n        <td>Android</td>\n            <td>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-android-arm64-v8a.apk\"><img src=\"https://img.shields.io/badge/APK-ARMv8-168039.svg?logo=android\"></a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-android-armeabi-v7a.apk\"><img src=\"https://img.shields.io/badge/APK-ARMv7-45bf55.svg?logo=android\"></a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-android-x86_64.apk\"><img src=\"https://img.shields.io/badge/APK-x64-96ed89.svg?logo=android\"></a>\n            </td>\n        </tr>\n        <tr>\n            <td>Windows</td>\n            <td>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-windows-amd64-setup.exe\"><img src=\"https://img.shields.io/badge/Setup-x64-2d7d9a.svg?logo=windows\"></a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-windows-amd64.zip\"><img src=\"https://img.shields.io/badge/Portable-x64-67b7d1.svg?logo=windows\"></a>\n            </td>\n        </tr>\n        <tr>\n            <td>macOS</td>\n            <td>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-macos-arm64.dmg\"><img src=\"https://img.shields.io/badge/DMG-Apple%20Silicon-%23000000.svg?logo=apple\"></a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-macos-amd64.dmg\"><img src=\"https://img.shields.io/badge/DMG-Intel%20X64-%2300A9E0.svg?logo=apple\"></a><br>\n            </td>\n        </tr>\n        <tr>\n            <td>Linux</td>\n            <td>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-linux-amd64.AppImage\"><img src=\"https://img.shields.io/badge/AppImage-x64-f84e29.svg?logo=linux\"> </a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-linux-amd64.deb\"><img src=\"https://img.shields.io/badge/DebPackage-x64-FF9966.svg?logo=debian\"> </a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-linux-amd64.deb\"><img src=\"https://img.shields.io/badge/RpmPackage-x64-F1B42F.svg?logo=redhat\"> </a>\n            </td>\n        </tr>\n    </tbody>\n</table>\n\n\n</div>#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "pr_template": "- #{{TITLE}}\n   - PR: ##{{NUMBER}}",
+              "empty_template": "\n\n**Download based on your OS:**\n\n<div align=left>\n<table>\n    <thead align=left>\n        <tr>\n            <th>OS</th>\n            <th>Download</th>\n        </tr>\n    </thead>\n    <tbody align=left>\n        <tr>\n        <td>Android</td>\n            <td>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-android-arm64-v8a.apk\"><img src=\"https://img.shields.io/badge/APK-ARMv8-168039.svg?logo=android\"></a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-android-armeabi-v7a.apk\"><img src=\"https://img.shields.io/badge/APK-ARMv7-45bf55.svg?logo=android\"></a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-android-x86_64.apk\"><img src=\"https://img.shields.io/badge/APK-x64-96ed89.svg?logo=android\"></a>\n            </td>\n        </tr>\n        <tr>\n            <td>Windows</td>\n            <td>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-windows-amd64-setup.exe\"><img src=\"https://img.shields.io/badge/Setup-x64-2d7d9a.svg?logo=windows\"></a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-windows-amd64.zip\"><img src=\"https://img.shields.io/badge/Portable-x64-67b7d1.svg?logo=windows\"></a>\n            </td>\n        </tr>\n        <tr>\n            <td>macOS</td>\n            <td>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-macos-arm64.dmg\"><img src=\"https://img.shields.io/badge/DMG-Apple%20Silicon-%23000000.svg?logo=apple\"></a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-macos-amd64.dmg\"><img src=\"https://img.shields.io/badge/DMG-Intel%20X64-%2300A9E0.svg?logo=apple\"></a><br>\n            </td>\n        </tr>\n        <tr>\n            <td>Linux</td>\n            <td>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-linux-amd64.AppImage\"><img src=\"https://img.shields.io/badge/AppImage-x64-f84e29.svg?logo=linux\"> </a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-linux-amd64.deb\"><img src=\"https://img.shields.io/badge/DebPackage-x64-FF9966.svg?logo=debian\"> </a><br>\n                <a href=\"https://github.com/LM-Firefly/FlClash/releases/download/${{ needs.build.outputs.ver }}/FlClash-${{ needs.build.outputs.sver }}-linux-amd64.deb\"><img src=\"https://img.shields.io/badge/RpmPackage-x64-F1B42F.svg?logo=redhat\"> </a>\n            </td>\n        </tr>\n    </tbody>\n</table>\n\n\n</div> - No changes"
+            }
+          failOnError: false
+          fromTag: "v0.0.0"
+          toTag: "v0.0.0"
+          commitMode: true
 
       - name: Release
         if: ${{ env.IS_STABLE == 'true' }}
         uses: softprops/action-gh-release@v2
         with:
+          name: FlClash ${{ steps.set-ver.outputs.version }}
           files: ./dist/*
-          body_path: './release.md'
-
-      - name: Create Fdroid Source Dir
-        if: ${{ env.IS_STABLE == 'true' }}
-        run: |
-          mkdir -p ./tmp
-          cp ./dist/*android-arm64-v8a* ./tmp/ || true
-          echo "Files copied successfully"
-
-      - name: Push to fdroid repo
-        if: ${{ env.IS_STABLE == 'true' }}
-        uses: cpina/github-action-push-to-another-repository@v1.7.2
-        env:
-          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
-        with:
-          source-directory: ./tmp/
-          destination-github-username: chen08209
-          destination-repository-name: FlClash-fdroid-repo
-          user-name: 'github-actions[bot]'
-          user-email: 'github-actions[bot]@users.noreply.github.com'
-          target-branch: main
-          commit-message: Update from ${{ github.ref_name }}
-          target-directory: /tmp/
-
+          tag_name: '${{ needs.build.outputs.ver }}'
+          token: ${{secrets.ACTIONS_TOKEN}}
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
+          append_body: true
+          generate_release_notes: true
+          prerelease: false
