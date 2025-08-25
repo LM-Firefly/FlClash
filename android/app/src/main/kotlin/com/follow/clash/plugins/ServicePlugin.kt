@@ -108,7 +108,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
     }
 
     private fun onServiceCrash() {
-        State.runStateFlow.tryEmit(RunState.PENDING)
+        State.runStateFlow.tryEmit(RunState.STOP)
         flutterMethodChannel.invokeMethodOnMainThread<Any>("crash", null)
     }
 
