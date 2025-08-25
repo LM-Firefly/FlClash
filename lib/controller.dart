@@ -965,7 +965,6 @@ class AppController {
       commonPrint.log('$futureFunction ===> $e');
       if (realSilence) {
         globalState.showNotifier(e.toString());
-        globalState.showNotifier(e.toString());
       } else {
         globalState.showMessage(
           title: title ?? appLocalizations.tip,
