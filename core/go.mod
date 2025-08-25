@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/3andne/restls-client-go v0.1.6 // indirect
 	github.com/RyuaNerin/go-krypto v1.3.0 // indirect
 	github.com/Yawning/aez v0.0.0-20211027044916-e49e68abd344 // indirect
 	github.com/ajg/form v1.5.1 // indirect
@@ -41,7 +42,9 @@ require (
 	github.com/insomniacslk/dhcp v0.0.0-20250109001534-8abf58130905 // indirect
 	github.com/josharian/native v1.1.0 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.9 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
+	github.com/lunixbochs/struc v0.0.0-20200707160740-784aaebc1d40 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mdlayher/netlink v1.7.2 // indirect
 	github.com/mdlayher/socket v0.4.1 // indirect
@@ -57,7 +60,6 @@ require (
 	github.com/metacubex/nftables v0.0.0-20250503052935-30a69ab87793 // indirect
 	github.com/metacubex/quic-go v0.54.1-0.20250730114134-a1ae705fe295 // indirect
 	github.com/metacubex/randv2 v0.2.0 // indirect
-	github.com/metacubex/restls-client-go v0.1.7 // indirect
 	github.com/metacubex/sing v0.5.6-0.20250823162028-e4ed887cf06e // indirect
 	github.com/metacubex/sing-mux v0.3.3-0.20250813083925-d7c9aeaeeaac // indirect
 	github.com/metacubex/sing-quic v0.0.0-20250718154553-1b193bec4cbb // indirect
@@ -79,6 +81,7 @@ require (
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
+	github.com/puzpuzpuz/xsync/v3 v3.5.1 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/sagernet/cors v1.2.1 // indirect
 	github.com/sagernet/netlink v0.0.0-20240612041022-b9a21c07ac6a // indirect
@@ -110,4 +113,5 @@ require (
 	golang.org/x/tools v0.24.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	lukechampine.com/blake3 v1.3.0 // indirect
 )
