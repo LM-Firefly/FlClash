@@ -1,5 +1,6 @@
 package com.follow.clash.plugins
 
+import com.follow.clash.RunState
 import com.follow.clash.Service
 import com.follow.clash.State
 import com.follow.clash.awaitResult
@@ -107,6 +108,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
     }
 
     private fun onServiceCrash() {
+        State.runStateFlow.tryEmit(RunState.PENDING)
         flutterMethodChannel.invokeMethodOnMainThread<Any>("crash", null)
     }
 

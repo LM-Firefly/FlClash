@@ -100,6 +100,9 @@ object State {
     private fun startService() {
         GlobalState.launch {
             runLock.withLock {
+                if (runStateFlow.value == RunState.STOP) {
+                    return@launch
+                }
                 runStateFlow.tryEmit(RunState.PENDING)
                 if (servicePlugin == null) {
                     return@launch
@@ -121,6 +124,9 @@ object State {
     fun handleStopService() {
         GlobalState.launch {
             runLock.withLock {
+                if (runStateFlow.value == RunState.STOP) {
+                    return@launch
+                }
                 runStateFlow.tryEmit(RunState.PENDING)
                 servicePlugin?.stopService()
                 runStateFlow.tryEmit(RunState.STOP)
