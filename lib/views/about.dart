@@ -49,13 +49,6 @@ class AboutView extends StatelessWidget {
           },
         ),
         ListItem(
-          title: const Text('Telegram'),
-          onTap: () {
-            globalState.openUrl('https://t.me/FlClash');
-          },
-          trailing: const Icon(Icons.launch),
-        ),
-        ListItem(
           title: Text(appLocalizations.project),
           onTap: () {
             globalState.openUrl('https://github.com/$repository');
@@ -66,7 +59,7 @@ class AboutView extends StatelessWidget {
           title: Text(appLocalizations.core),
           onTap: () {
             globalState.openUrl(
-              'https://github.com/chen08209/Clash.Meta/tree/FlClash',
+              'https://github.com/LM-Firefly/Clash.Meta/tree/FlClash',
             );
           },
           trailing: const Icon(Icons.launch),
