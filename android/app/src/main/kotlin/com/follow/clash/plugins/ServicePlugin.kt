@@ -129,8 +129,8 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
     }
 
     fun handleInit(result: MethodChannel.Result) {
+        Service.bind()
         launch {
-            Service.bind()
             Service.setMessageCallback {
                 handleSendEvent(it)
             }

@@ -258,6 +258,28 @@ class BypassDomainItem extends StatelessWidget {
   }
 }
 
+class DNSHijackingItem extends ConsumerWidget {
+  const DNSHijackingItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final dnsHijacking = ref.watch(
+      vpnSettingProvider.select((state) => state.dnsHijacking),
+    );
+    return ListItem<RouteMode>.switchItem(
+      title: Text(appLocalizations.dnsHijacking),
+      delegate: SwitchDelegate(
+        value: dnsHijacking,
+        onChanged: (value) async {
+          ref
+              .read(vpnSettingProvider.notifier)
+              .updateState((state) => state.copyWith(dnsHijacking: value));
+        },
+      ),
+    );
+  }
+}
+
 class RouteModeItem extends ConsumerWidget {
   const RouteModeItem({super.key});
 
@@ -344,6 +366,7 @@ final networkItems = [
         const BypassDomainItem(),
         const AllowBypassItem(),
         const Ipv6Item(),
+        const DNSHijackingItem(),
       ],
     ),
   if (system.isDesktop)

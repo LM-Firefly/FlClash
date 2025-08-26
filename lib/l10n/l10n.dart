@@ -3304,6 +3304,16 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `DNS hijacking`
+  String get dnsHijacking {
+    return Intl.message(
+      'DNS hijacking',
+      name: 'dnsHijacking',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

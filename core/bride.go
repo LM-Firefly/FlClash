@@ -16,8 +16,7 @@ func resolveProcess(callback unsafe.Pointer, protocol int, source, target string
 	t := C.CString(target)
 	defer C.free(unsafe.Pointer(t))
 	res := C.resolve_process(callback, C.int(protocol), s, t, C.int(uid))
-	defer releaseObject(unsafe.Pointer(res))
-	return takeCString(res)
+	return parseCString(res)
 }
 
 func invokeResult(callback unsafe.Pointer, data string) {
@@ -30,7 +29,7 @@ func releaseObject(callback unsafe.Pointer) {
 	C.release_object(callback)
 }
 
-func takeCString(s *C.char) string {
-	defer releaseObject(unsafe.Pointer(s))
+func parseCString(s *C.char) string {
+	//defer C.free(unsafe.Pointer(s))
 	return C.GoString(s)
 }

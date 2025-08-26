@@ -100,17 +100,14 @@ const defaultBypassPrivateRouteAddress = [
   'f000::/5',
   'f800::/6',
   'fe00::/9',
-  'fec0::/10'
+  'fec0::/10',
 ];
 
 @freezed
 abstract class ProxyGroup with _$ProxyGroup {
   const factory ProxyGroup({
     required String name,
-    @JsonKey(
-      fromJson: GroupType.parseProfileType,
-    )
-    required GroupType type,
+    @JsonKey(fromJson: GroupType.parseProfileType) required GroupType type,
     List<String>? proxies,
     List<String>? use,
     int? interval,
@@ -132,9 +129,7 @@ abstract class ProxyGroup with _$ProxyGroup {
 
 @freezed
 abstract class RuleProvider with _$RuleProvider {
-  const factory RuleProvider({
-    required String name,
-  }) = _RuleProvider;
+  const factory RuleProvider({required String name}) = _RuleProvider;
 
   factory RuleProvider.fromJson(Map<String, Object?> json) =>
       _$RuleProviderFromJson(json);
@@ -206,14 +201,11 @@ extension TunExt on Tun {
         ? defaultBypassPrivateRouteAddress
         : routeAddress;
     return switch (system.isDesktop) {
-      true => copyWith(
-          autoRoute: true,
-          routeAddress: [],
-        ),
+      true => copyWith(autoRoute: true, routeAddress: []),
       false => copyWith(
-          autoRoute: mRouteAddress.isEmpty ? true : false,
-          routeAddress: mRouteAddress,
-        ),
+        autoRoute: mRouteAddress.isEmpty ? true : false,
+        routeAddress: mRouteAddress,
+      ),
     };
   }
 }
@@ -225,11 +217,7 @@ abstract class FallbackFilter with _$FallbackFilter {
     @Default('CN') @JsonKey(name: 'geoip-code') String geoipCode,
     @Default(['gfw']) List<String> geosite,
     @Default(['240.0.0.0/4']) List<String> ipcidr,
-    @Default([
-      '+.google.com',
-      '+.facebook.com',
-      '+.youtube.com',
-    ])
+    @Default(['+.google.com', '+.facebook.com', '+.youtube.com'])
     List<String> domain,
   }) = _FallbackFilter;
 
@@ -256,32 +244,20 @@ abstract class Dns with _$Dns {
     @Default('198.18.0.1/16')
     @JsonKey(name: 'fake-ip-range')
     String fakeIpRange,
-    @Default([
-      '*.lan',
-      'localhost.ptlogin2.qq.com',
-    ])
+    @Default(['*.lan', 'localhost.ptlogin2.qq.com'])
     @JsonKey(name: 'fake-ip-filter')
     List<String> fakeIpFilter,
     @Default({
       'www.baidu.com': '114.114.114.114',
       '+.internal.crop.com': '10.0.0.1',
-      'geosite:cn': 'https://doh.pub/dns-query'
+      'geosite:cn': 'https://doh.pub/dns-query',
     })
     @JsonKey(name: 'nameserver-policy')
     Map<String, String> nameserverPolicy,
-    @Default([
-      'https://doh.pub/dns-query',
-      'https://dns.alidns.com/dns-query',
-    ])
+    @Default(['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query'])
     List<String> nameserver,
-    @Default([
-      'tls://8.8.4.4',
-      'tls://1.1.1.1',
-    ])
-    List<String> fallback,
-    @Default([
-      'https://doh.pub/dns-query',
-    ])
+    @Default(['tls://8.8.4.4', 'tls://1.1.1.1']) List<String> fallback,
+    @Default(['https://doh.pub/dns-query'])
     @JsonKey(name: 'proxy-server-nameserver')
     List<String> proxyServerNameserver,
     @Default(FallbackFilter())
@@ -351,9 +327,7 @@ abstract class ParsedRule with _$ParsedRule {
   factory ParsedRule.parseString(String value) {
     final splits = value.split(',');
     final shortSplits = splits
-        .where(
-          (item) => !item.contains('src') && !item.contains('no-resolve'),
-        )
+        .where((item) => !item.contains('src') && !item.contains('no-resolve'))
         .toList();
     final ruleAction = RuleAction.values.firstWhere(
       (item) => item.value == shortSplits.first,
@@ -398,23 +372,17 @@ extension ParsedRuleExt on ParsedRule {
       if (ruleAction.hasParams) ...[
         if (src) 'src',
         if (noResolve) 'no-resolve',
-      ]
+      ],
     ].join(',');
   }
 }
 
 @freezed
 abstract class Rule with _$Rule {
-  const factory Rule({
-    required String id,
-    required String value,
-  }) = _Rule;
+  const factory Rule({required String id, required String value}) = _Rule;
 
   factory Rule.value(String value) {
-    return Rule(
-      value: value,
-      id: utils.uuidV4,
-    );
+    return Rule(value: value, id: utils.uuidV4);
   }
 
   factory Rule.fromJson(Map<String, Object?> json) => _$RuleFromJson(json);
@@ -422,9 +390,7 @@ abstract class Rule with _$Rule {
 
 @freezed
 abstract class SubRule with _$SubRule {
-  const factory SubRule({
-    required String name,
-  }) = _SubRule;
+  const factory SubRule({required String name}) = _SubRule;
 
   factory SubRule.fromJson(Map<String, Object?> json) =>
       _$SubRuleFromJson(json);
@@ -434,11 +400,7 @@ List<Rule> _genRule(List<dynamic>? rules) {
   if (rules == null) {
     return [];
   }
-  return rules
-      .map(
-        (item) => Rule.value(item),
-      )
-      .toList();
+  return rules.map((item) => Rule.value(item)).toList();
 }
 
 List<RuleProvider> _genRuleProviders(Map<String, dynamic> json) {
@@ -446,13 +408,7 @@ List<RuleProvider> _genRuleProviders(Map<String, dynamic> json) {
 }
 
 List<SubRule> _genSubRules(Map<String, dynamic> json) {
-  return json.entries
-      .map(
-        (entry) => SubRule(
-          name: entry.key,
-        ),
-      )
-      .toList();
+  return json.entries.map((entry) => SubRule(name: entry.key)).toList();
 }
 
 @freezed
@@ -484,7 +440,7 @@ abstract class ClashConfig with _$ClashConfig {
     @Default(false) @JsonKey(name: 'allow-lan') bool allowLan,
     @Default(LogLevel.error) @JsonKey(name: 'log-level') LogLevel logLevel,
     @Default(false) bool ipv6,
-    @Default(FindProcessMode.off)
+    @Default(FindProcessMode.always)
     @JsonKey(
       name: 'find-process-mode',
       unknownEnumValue: FindProcessMode.always,

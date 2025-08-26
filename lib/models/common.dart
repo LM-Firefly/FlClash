@@ -97,9 +97,9 @@ extension TrackerInfoExt on TrackerInfo {
     final process = metadata.process;
     final uid = metadata.uid;
     if (uid != 0) {
-      return '$process($uid)';
+      return '$process($uid)'.trim();
     }
-    return process;
+    return process.trim();
   }
 }
 
