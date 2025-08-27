@@ -67,7 +67,7 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-
+            applicationIdSuffix = ".Firefly"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
