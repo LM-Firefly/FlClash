@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 
 class ServiceDelegate<T>(
     private val intent: Intent,
@@ -55,20 +54,19 @@ class ServiceDelegate<T>(
     }
 
     suspend inline fun <R> useService(
+        retries: Int = 10,
+        delayMillis: Long = 200,
         crossinline block: (T) -> R
     ): Result<R> {
-        return withTimeoutOrNull(10_000) {
-            service.filterNotNull().retryWhen { _, _ ->
-                    delay(200)
-                    true
-                }.first()
-        }?.let { s ->
-            try {
-                Result.success(block(s))
-            } catch (e: Exception) {
-                Result.failure(e)
+        return runCatching {
+            service.filterNotNull().retryWhen { _, attempt ->
+                (attempt < retries).also {
+                    if (it) delay(delayMillis)
+                }
+            }.first().let {
+                block(it)
             }
-        } ?: Result.failure(Exception("Service connection timeout"))
+        }
     }
 
     fun unbind() {
