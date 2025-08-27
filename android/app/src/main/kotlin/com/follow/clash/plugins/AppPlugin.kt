@@ -285,9 +285,12 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                     NOTIFICATION_PERMISSION_REQUEST_CODE
                 )
-                return
             }
+            return
+        } else {
+            invokeRequestNotificationCallback()
         }
+
     }
 
     fun invokeRequestNotificationCallback() {
