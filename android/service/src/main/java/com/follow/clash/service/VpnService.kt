@@ -12,7 +12,6 @@ import android.util.Log
 import androidx.core.content.getSystemService
 import com.follow.clash.common.AccessControlMode
 import com.follow.clash.common.BroadcastAction
-import com.follow.clash.common.GlobalState
 import com.follow.clash.common.sendBroadcast
 import com.follow.clash.core.Core
 import com.follow.clash.service.models.VpnOptions
@@ -108,7 +107,6 @@ class VpnService : SystemVpnService(), IBaseService,
             try {
                 val isSuccess = super.onTransact(code, data, reply, flags)
                 if (!isSuccess) {
-                    GlobalState.log("onTransact error ===>")
                     BroadcastAction.STOP.sendBroadcast()
                 }
                 return isSuccess

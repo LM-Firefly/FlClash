@@ -176,7 +176,7 @@ final class ProvidersProvider
         argument: null,
         retry: null,
         name: r'providersProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -197,7 +197,7 @@ final class ProvidersProvider
   }
 }
 
-String _$providersHash() => r'3cb101d6235dbca03390910fa5609d14f207e022';
+String _$providersHash() => r'62b58bcc5486c0518bf671cb0b9c0f3b33c41f6d';
 
 abstract class _$Providers extends $Notifier<List<ExternalProvider>> {
   List<ExternalProvider> build();

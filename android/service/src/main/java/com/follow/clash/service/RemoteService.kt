@@ -3,7 +3,6 @@ package com.follow.clash.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import com.follow.clash.common.GlobalState
 import com.follow.clash.common.ServiceDelegate
 import com.follow.clash.common.intent
 import com.follow.clash.core.Core
@@ -62,7 +61,6 @@ class RemoteService : Service(),
         }
 
         override fun updateNotificationParams(params: NotificationParams?) {
-            GlobalState.log(params.toString())
             State.notificationParamsFlow.tryEmit(params)
         }
 
