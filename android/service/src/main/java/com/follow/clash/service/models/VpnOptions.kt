@@ -23,6 +23,7 @@ data class VpnOptions(
     val allowBypass: Boolean,
     val systemProxy: Boolean,
     val bypassDomain: List<String>,
+    val stack: String,
     val routeAddress: List<String>,
 ) : Parcelable
 

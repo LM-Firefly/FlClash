@@ -222,6 +222,7 @@ class VpnService : SystemVpnService(), IBaseService,
             fd,
             protect = this::protect,
             resolverProcess = this::resolverProcess,
+            options.stack,
             options.address,
             options.dns
         )

@@ -15,6 +15,7 @@ import (
 	"errors"
 	"github.com/metacubex/mihomo/component/dialer"
 	"github.com/metacubex/mihomo/component/process"
+	"github.com/metacubex/mihomo/component/resolver"
 	"github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/dns"
 	"github.com/metacubex/mihomo/listener/sing_tun"
@@ -36,14 +37,15 @@ type TunHandler struct {
 	limit *semaphore.Weighted
 }
 
-func (th *TunHandler) start(fd int, address, dns string) {
+func (th *TunHandler) start(fd int, stack, address, dns string) {
 	_ = th.limit.Acquire(context.TODO(), 4)
 	defer th.limit.Release(4)
 	th.initHook()
-	tunListener := t.Start(fd, currentConfig.General.Tun.Device, currentConfig.General.Tun.Stack, address, dns)
+	tunListener := t.Start(fd, stack, address, dns)
 	if tunListener != nil {
 		log.Infoln("TUN address: %v", tunListener.Address())
 		th.listener = tunListener
+		resolver.ResetConnection()
 		return
 	}
 	th.clear()
@@ -136,7 +138,7 @@ func handleStopTun() {
 	}
 }
 
-func handleStartTun(callback unsafe.Pointer, fd int, address, dns string) {
+func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string) {
 	handleStopTun()
 	tunLock.Lock()
 	defer tunLock.Unlock()
@@ -145,7 +147,7 @@ func handleStartTun(callback unsafe.Pointer, fd int, address, dns string) {
 			callback: callback,
 			limit:    semaphore.NewWeighted(4),
 		}
-		tunHandler.start(fd, address, dns)
+		tunHandler.start(fd, stack, address, dns)
 	}
 }
 
@@ -197,8 +199,8 @@ func invokeAction(callback unsafe.Pointer, paramsChar *C.char) {
 }
 
 //export startTUN
-func startTUN(callback unsafe.Pointer, fd C.int, addressChar, dnsChar *C.char) bool {
-	handleStartTun(callback, int(fd), parseCString(addressChar), parseCString(dnsChar))
+func startTUN(callback unsafe.Pointer, fd C.int, stackChar, addressChar, dnsChar *C.char) bool {
+	handleStartTun(callback, int(fd), parseCString(stackChar), parseCString(addressChar), parseCString(dnsChar))
 	return true
 }
 

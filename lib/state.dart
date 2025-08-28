@@ -199,6 +199,7 @@ class GlobalState {
     final networkProps = config.networkProps;
     final port = config.patchClashConfig.mixedPort;
     return VpnOptions(
+      stack: config.patchClashConfig.tun.stack.name,
       enable: vpnProps.enable,
       systemProxy: networkProps.systemProxy,
       port: port,

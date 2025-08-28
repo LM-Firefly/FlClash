@@ -8,6 +8,7 @@ data object Core {
     private external fun startTun(
         fd: Int,
         cb: TunInterface,
+        stack: String,
         address: String,
         dns: String,
     )
@@ -29,6 +30,7 @@ data object Core {
         fd: Int,
         protect: (Int) -> Boolean,
         resolverProcess: (protocol: Int, source: InetSocketAddress, target: InetSocketAddress, uid: Int) -> String,
+        stack: String,
         address: String,
         dns: String,
     ) {
@@ -53,6 +55,7 @@ data object Core {
                     )
                 }
             },
+            stack,
             address,
             dns
         )

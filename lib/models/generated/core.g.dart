@@ -91,6 +91,7 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
   bypassDomain: (json['bypassDomain'] as List<dynamic>)
       .map((e) => e as String)
       .toList(),
+  stack: json['stack'] as String,
   routeAddress:
       (json['routeAddress'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -108,6 +109,7 @@ Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
       'allowBypass': instance.allowBypass,
       'systemProxy': instance.systemProxy,
       'bypassDomain': instance.bypassDomain,
+      'stack': instance.stack,
       'routeAddress': instance.routeAddress,
     };
 

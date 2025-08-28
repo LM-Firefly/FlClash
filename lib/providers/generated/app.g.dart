@@ -90,7 +90,7 @@ final class LogsProvider extends $NotifierProvider<Logs, FixedList<Log>> {
   }
 }
 
-String _$logsHash() => r'0a32e067292d449d61af59a689cb26691f4afe44';
+String _$logsHash() => r'a671cf70f13d38cae75dc51841b651fe2d2dad9a';
 
 abstract class _$Logs extends $Notifier<FixedList<Log>> {
   FixedList<Log> build();
@@ -143,7 +143,7 @@ final class RequestsProvider
   }
 }
 
-String _$requestsHash() => r'526f2c1da1347fd2e6e3e23aac0335fcfe0cb28a';
+String _$requestsHash() => r'8642621b8b5f2e56f3abb04554c058fb30389795';
 
 abstract class _$Requests extends $Notifier<FixedList<TrackerInfo>> {
   FixedList<TrackerInfo> build();
@@ -197,7 +197,7 @@ final class ProvidersProvider
   }
 }
 
-String _$providersHash() => r'4292240629a99470b2e72426dde3b9049b9b57e0';
+String _$providersHash() => r'3cb101d6235dbca03390910fa5609d14f207e022';
 
 abstract class _$Providers extends $Notifier<List<ExternalProvider>> {
   List<ExternalProvider> build();
@@ -304,7 +304,7 @@ final class SystemBrightnessProvider
   }
 }
 
-String _$systemBrightnessHash() => r'46eb2d23b05405723efc29480e8f258bf2d8138b';
+String _$systemBrightnessHash() => r'2fb112459d5f505768f8c33b314aa62cf1fb0a0a';
 
 abstract class _$SystemBrightness extends $Notifier<Brightness> {
   Brightness build();
@@ -357,7 +357,7 @@ final class TrafficsProvider
   }
 }
 
-String _$trafficsHash() => r'8b86eb718fed5776de174c51fd5b231957011fe6';
+String _$trafficsHash() => r'7df7d01f39e9fa1bf629221c9f73273757fa535a';
 
 abstract class _$Traffics extends $Notifier<FixedList<Traffic>> {
   FixedList<Traffic> build();
@@ -462,7 +462,7 @@ final class LocalIpProvider extends $NotifierProvider<LocalIp, String?> {
   }
 }
 
-String _$localIpHash() => r'2dd4afdb29db4791ebd80d976f9ea31c62959199';
+String _$localIpHash() => r'25ff07ff9ae316eac7ef39c29d9ae2714b7ba323';
 
 abstract class _$LocalIp extends $Notifier<String?> {
   String? build();
@@ -1199,7 +1199,7 @@ final class DelayDataSourceProvider
   }
 }
 
-String _$delayDataSourceHash() => r'1b94dcfdb9e1eb4c0b7ca69d933f2299d1f94ed5';
+String _$delayDataSourceHash() => r'0cc7064c6e7e7a1823df1c5b339001ae49ee54f1';
 
 abstract class _$DelayDataSource extends $Notifier<DelayMap> {
   DelayMap build();
@@ -1308,7 +1308,7 @@ final class ProfileOverrideStateProvider
 }
 
 String _$profileOverrideStateHash() =>
-    r'c57bb59c3900b6ee752d6c1cd5c9c0ccc6d1f45e';
+    r'6bcf739e034cc39623dc63bf304189d63fc19404';
 
 abstract class _$ProfileOverrideState extends $Notifier<ProfileOverrideModel?> {
   ProfileOverrideModel? build();
@@ -1414,7 +1414,7 @@ final class QueryMapProvider
   }
 }
 
-String _$queryMapHash() => r'102d489d31d312f082d7117f80a6de8318eaaf75';
+String _$queryMapHash() => r'f64a1bf5fcd4f85986d8ba3c956e397abc4f2d5d';
 
 abstract class _$QueryMap extends $Notifier<Map<QueryTag, String>> {
   Map<QueryTag, String> build();

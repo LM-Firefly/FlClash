@@ -38,7 +38,7 @@ final class AppSettingProvider
   }
 }
 
-String _$appSettingHash() => r'13a93334e18b97f5d52eb3e05bbc7b0b8a5c453e';
+String _$appSettingHash() => r'7ec7fbf146e690dea42cf854fa4452b2652d8a46';
 
 abstract class _$AppSetting extends $Notifier<AppSettingProps> {
   AppSettingProps build();
@@ -91,7 +91,7 @@ final class WindowSettingProvider
   }
 }
 
-String _$windowSettingHash() => r'9bf31c7e08fab84213f31e249270f9d730bdf711';
+String _$windowSettingHash() => r'fc0e5c4ec95a57a24e0e656fc2fab6f31add31e7';
 
 abstract class _$WindowSetting extends $Notifier<WindowProps> {
   WindowProps build();
@@ -143,7 +143,7 @@ final class VpnSettingProvider extends $NotifierProvider<VpnSetting, VpnProps> {
   }
 }
 
-String _$vpnSettingHash() => r'3dae8b56504bfb906aca546c5a5389d79d259a5e';
+String _$vpnSettingHash() => r'1dad4881ae7bcec76678585ac7b84f820b2ca92b';
 
 abstract class _$VpnSetting extends $Notifier<VpnProps> {
   VpnProps build();
@@ -196,7 +196,7 @@ final class NetworkSettingProvider
   }
 }
 
-String _$networkSettingHash() => r'5a30d4cbfaba94cc29ad08dc1771ebb368b4ba14';
+String _$networkSettingHash() => r'6ac5959ad478247fd60329221743cccc7a7d010b';
 
 abstract class _$NetworkSetting extends $Notifier<NetworkProps> {
   NetworkProps build();
@@ -249,7 +249,7 @@ final class ThemeSettingProvider
   }
 }
 
-String _$themeSettingHash() => r'0b5620b696d73260d94f63cbfb65857acd2000f0';
+String _$themeSettingHash() => r'0ddad89cb63fc2b2094dd82262c76d972c2def5c';
 
 abstract class _$ThemeSetting extends $Notifier<ThemeProps> {
   ThemeProps build();
@@ -302,7 +302,7 @@ final class ProfilesProvider
   }
 }
 
-String _$profilesHash() => r'3203cc7de88b91fff86b79c75c2cacd8116fffb7';
+String _$profilesHash() => r'aad57222a4a0bd16f2c70f9eb8ba0053d1a26d0f';
 
 abstract class _$Profiles extends $Notifier<List<Profile>> {
   List<Profile> build();
@@ -408,7 +408,7 @@ final class AppDAVSettingProvider
   }
 }
 
-String _$appDAVSettingHash() => r'4bf293ac0d1fba157f60df920b7ffd5afefaab26';
+String _$appDAVSettingHash() => r'fa8de5d89d7a11f34f3f8e20b71cf164e5e11888';
 
 abstract class _$AppDAVSetting extends $Notifier<DAV?> {
   DAV? build();
@@ -567,7 +567,7 @@ final class ProxiesStyleSettingProvider
 }
 
 String _$proxiesStyleSettingHash() =>
-    r'54ebf20a8d4455b2d7a65824f375c4c02a5fba28';
+    r'4ff62951ddc8289220191850516b6751ee69d642';
 
 abstract class _$ProxiesStyleSetting extends $Notifier<ProxiesStyle> {
   ProxiesStyle build();
@@ -620,7 +620,7 @@ final class ScriptStateProvider
   }
 }
 
-String _$scriptStateHash() => r'afbb70d1dd7e577b2377ecd8ab35d0905c1d0e87';
+String _$scriptStateHash() => r'4770c34c3d24451fef95e372450e4a333b419977';
 
 abstract class _$ScriptState extends $Notifier<ScriptProps> {
   ScriptProps build();
@@ -673,7 +673,7 @@ final class PatchClashConfigProvider
   }
 }
 
-String _$patchClashConfigHash() => r'd9acdd0ace673fc1c1460b63d7a27c5787713c14';
+String _$patchClashConfigHash() => r'b355bd89969d4d119631fdf117df230a71493fa8';
 
 abstract class _$PatchClashConfig extends $Notifier<ClashConfig> {
   ClashConfig build();

@@ -14,9 +14,13 @@ import (
 	"strings"
 )
 
-func Start(fd int, device string, stack constant.TUNStack, address, dns string) *sing_tun.Listener {
+func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 	var prefix4 []netip.Prefix
 	var prefix6 []netip.Prefix
+	tunStack, ok := constant.StackTypeMapping[strings.ToLower(stack)]
+	if !ok {
+		tunStack = constant.TunSystem
+	}
 	for _, a := range strings.Split(address, ",") {
 		a = strings.TrimSpace(a)
 		if len(a) == 0 {
@@ -45,8 +49,8 @@ func Start(fd int, device string, stack constant.TUNStack, address, dns string) 
 
 	options := LC.Tun{
 		Enable:              true,
-		Device:              device,
-		Stack:               stack,
+		Device:              "FlClash",
+		Stack:               tunStack,
 		DNSHijack:           dnsHijack,
 		AutoRoute:           false,
 		AutoDetectInterface: false,

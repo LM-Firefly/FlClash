@@ -9,16 +9,17 @@
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_follow_clash_core_Core_startTun(JNIEnv *env, jobject thiz, jint fd, jobject cb,
-                                         jstring address, jstring dns) {
+                                         jstring stack, jstring address, jstring dns) {
     const auto interface = new_global(cb);
+    scoped_string stackChar = get_string(stack);
     scoped_string addressChar = get_string(address);
     scoped_string dnsChar = get_string(dns);
-    startTUN(interface, fd, addressChar, dnsChar);
+    startTUN(interface, fd, stackChar, addressChar, dnsChar);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clash_core_Core_stopTun(JNIEnv *) {
+Java_com_follow_clash_core_Core_stopTun(JNIEnv *env, jobject thiz) {
     stopTun();
 }
 
@@ -97,12 +98,12 @@ call_tun_interface_resolve_process_impl(void *tun_interface, const int protocol,
                                         const int uid) {
     ATTACH_JNI();
     const auto packageName = reinterpret_cast<jstring>(env->CallObjectMethod(
-        static_cast<jobject>(tun_interface),
-        m_tun_interface_resolve_process,
-        protocol,
-        new_string(source),
-        new_string(target),
-        uid));
+            static_cast<jobject>(tun_interface),
+            m_tun_interface_resolve_process,
+            protocol,
+            new_string(source),
+            new_string(target),
+            uid));
     scoped_string packageNameChar = get_string(packageName);
     return packageNameChar;
 }
@@ -146,7 +147,7 @@ JNI_OnLoad(JavaVM *vm, void *) {
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_follow_clash_core_Core_startTun(JNIEnv *env, jobject thiz, jint fd, jobject cb,
-                                         jstring address, jstring dns) {
+                                         jstring stack, jstring address, jstring dns) {
 }
 
 extern "C"
