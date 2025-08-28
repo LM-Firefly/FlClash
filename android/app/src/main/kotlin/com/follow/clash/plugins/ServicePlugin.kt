@@ -117,7 +117,6 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
             )
             result.success(true)
         }
-
     }
 
     fun handleInit(result: MethodChannel.Result) {

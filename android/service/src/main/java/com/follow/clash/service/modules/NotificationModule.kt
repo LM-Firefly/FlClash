@@ -25,10 +25,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 
 class NotificationModule(private val service: Service) : Module() {
@@ -48,11 +48,13 @@ class NotificationModule(private val service: Service) : Module() {
                 emit(isScreenOn())
             }
 
-            tickerFlow(1000, 0)
-                .combine(State.notificationParamsFlow.zip(screenFlow) { params, screenOn ->
-                    params to screenOn
-                }) { _, (params, screenOn) -> params to screenOn }
+            combine(
+                tickerFlow(1000, 0),
+                State.notificationParamsFlow,
+                screenFlow
+            ) { _, params, screenOn -> params to screenOn }
                 .filter { (params, screenOn) -> params != null && screenOn }
+                .distinctUntilChanged { old, new -> old.first == new.first && old.second == new.second }
                 .collect { (params, _) ->
                     update(params!!)
                 }
