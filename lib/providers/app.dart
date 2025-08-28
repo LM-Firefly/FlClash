@@ -54,7 +54,7 @@ class Requests extends _$Requests with AutoDisposeNotifierMixin {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class Providers extends _$Providers with AutoDisposeNotifierMixin {
   @override
   List<ExternalProvider> build() {
