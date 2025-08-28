@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:fl_clash/common/color.dart';
 import 'package:fl_clash/common/system.dart';
 import 'package:fl_clash/views/dashboard/widgets/widgets.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -95,7 +96,7 @@ extension LogLevelExt on LogLevel {
       LogLevel.silent => Colors.grey.shade700,
       LogLevel.debug => Colors.grey.shade400,
       LogLevel.info => null,
-      LogLevel.warning => Colors.yellowAccent,
+      LogLevel.warning => Colors.orangeAccent.darken(),
       LogLevel.error => Colors.redAccent,
     };
   }
