@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart';
+import 'package:yaml/yaml.dart';
+import 'package:yaml_writer/yaml_writer.dart';
 
 enum Target { windows, linux, android, macos }
 
@@ -329,6 +331,45 @@ class Build {
       print('Failed to copy file: $e');
     }
   }
+
+  static Future<void> _updateVersionWithTimestamp() async {
+    final pubspecFile = File(join(current, 'pubspec.yaml'));
+    final pubspecContent = await pubspecFile.readAsString();
+    final yamlDoc = loadYaml(pubspecContent);
+
+    final version = yamlDoc['version'].toString();
+    final versionParts = version.split('+');
+    final baseVersion = versionParts[0];
+
+    // 使用UTC+8时区的时间
+    final timestamp = DateTime.now().toUtc().add(Duration(hours: 8));
+    final formattedTimestamp = '${timestamp.year}'
+        '${timestamp.month.toString().padLeft(2, '0')}'
+        '${timestamp.day.toString().padLeft(2, '0')}'
+        '${timestamp.hour.toString().padLeft(2, '0')}';
+
+    final newVersion = '$baseVersion+$formattedTimestamp';
+
+    // 更新版本号
+    final newPubspecContent = pubspecContent.replaceFirst(
+      RegExp(r'version:\s*[^\n]*'),
+      'version: $newVersion',
+    );
+
+    await pubspecFile.writeAsString(newPubspecContent);
+    print('Updated version from $version to $newVersion');
+    // Ensure pub package graph and tooling cache are refreshed so builds pick up
+    // the new version (this updates .dart_tool/* such as package_graph.json).
+    try {
+      await exec(
+        getExecutable('dart pub get'),
+        name: 'dart pub get',
+        workingDirectory: current,
+      );
+    } catch (e) {
+      print('Warning: failed to run `dart pub get`: $e');
+    }
+  }
 }
 
 class BuildCommand extends Command {
@@ -427,6 +468,9 @@ class BuildCommand extends Command {
 
   @override
   Future<void> run() async {
+    // 在构建前更新版本号
+    await Build._updateVersionWithTimestamp();
+
     final mode = target == Target.android ? Mode.lib : Mode.core;
     final String out = argResults?['out'] ?? (target.same ? 'app' : 'core');
     final archName = argResults?['arch'];
