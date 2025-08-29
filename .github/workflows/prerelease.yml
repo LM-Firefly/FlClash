@@ -1,11 +1,9 @@
-name: build
-
+name: Build Pre-Release
 on:
+  workflow_dispatch:
   push:
-    tags:
-      - 'v*'
-env:
-  IS_STABLE: ${{ !contains(github.ref, '-') }}
+    branches:
+      - main
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   # 自动取消其他运行中的workflow
@@ -25,7 +23,7 @@ jobs:
           - platform: android
             os: ubuntu-latest
           - platform: windows
-            os: Windows-2022
+            os: windows-latest
             arch: amd64
           - platform: linux
             os: ubuntu-22.04
@@ -94,7 +92,7 @@ jobs:
         run: flutter pub get
 
       - name: Setup
-        run: dart setup.dart ${{ matrix.platform }} ${{ matrix.arch && format('--arch {0}', matrix.arch) }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }}
+        run: dart setup.dart ${{ matrix.platform }} ${{ matrix.arch && format('--arch {0}', matrix.arch) }}
 
       - id: set-ver
         shell: bash
@@ -111,13 +109,12 @@ jobs:
           path: ./dist
           overwrite: true
 
-  publish-release:
+  prerelease:
     runs-on: ubuntu-latest
     needs: [ build ]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-        if: ${{ env.IS_STABLE == 'true' }}
         with:
           fetch-depth: 0
           ref: refs/heads/main
@@ -130,7 +127,6 @@ jobs:
           merge-multiple: true
 
       - name: Generate sha256
-        if: env.IS_STABLE == 'true'
         run: |
           cd ./dist
           for file in $(find . -type f -not -name "*.sha256"); do
@@ -171,10 +167,9 @@ jobs:
           commitMode: true
 
       - name: Release
-        if: ${{ env.IS_STABLE == 'true' }}
         uses: softprops/action-gh-release@v2
         with:
-          name: FlClash ${{ steps.set-ver.outputs.version }}
+          name: FlClash ${{ needs.build.outputs.ver }}
           files: ./dist/*
           tag_name: '${{ needs.build.outputs.ver }}'
           token: ${{secrets.ACTIONS_TOKEN}}
@@ -182,4 +177,4 @@ jobs:
             ${{ steps.changelog.outputs.changelog }}
           append_body: true
           generate_release_notes: true
-          prerelease: false
+          prerelease: true
