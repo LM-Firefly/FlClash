@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart';
+import 'package:yaml/yaml.dart';
+// 'yaml_writer' removed because it's not used in this file
 
 enum Target { windows, linux, android, macos }
 
@@ -110,22 +112,78 @@ class Build {
   static String _getCc(BuildItem buildItem) {
     final environment = Platform.environment;
     if (buildItem.target == Target.android) {
-      final ndk = environment['ANDROID_NDK'];
-      assert(ndk != null);
+      String? ndk =
+          environment['ANDROID_NDK'] ??
+          environment['ANDROID_NDK_HOME'] ??
+          environment['ANDROID_NDK_ROOT'] ??
+          environment['NDK_HOME'];
+
+      // If the common NDK environment variables are not set, try to locate
+      // an installed NDK under common SDK locations on the system.
+      if (ndk == null || ndk.isEmpty) {
+        final List<String> candidates = [];
+        final sdkEnv =
+            environment['ANDROID_SDK_ROOT'] ?? environment['ANDROID_HOME'];
+        if (sdkEnv != null && sdkEnv.isNotEmpty) candidates.add(sdkEnv);
+        final localAppData = environment['LOCALAPPDATA'];
+        if (localAppData != null && localAppData.isNotEmpty) {
+          candidates.add(join(localAppData, 'Android', 'Sdk'));
+        }
+        // Add some common absolute locations that users often use on Windows
+        candidates.addAll([r'C:\Android\sdk', r'D:\Android\sdk']);
+
+        String? found;
+        for (final base in candidates) {
+          final ndkRoot = Directory(join(base, 'ndk'));
+          if (!ndkRoot.existsSync()) continue;
+          final versions = ndkRoot
+              .listSync()
+              .whereType<Directory>()
+              .map((d) => d.path)
+              .toList();
+          if (versions.isEmpty) continue;
+          // Pick the lexicographically last entry which typically corresponds
+          // to the newest installed NDK version (e.g. '29.0.14206865').
+          versions.sort();
+          found = versions.last;
+          break;
+        }
+
+        if (found != null) {
+          ndk = found;
+          print('Auto-detected Android NDK at: $ndk');
+        }
+      }
+
+      if (ndk == null || ndk.isEmpty) {
+        throw 'Android NDK environment variable not found. Please set one of ANDROID_NDK, ANDROID_NDK_HOME, ANDROID_NDK_ROOT or NDK_HOME to your Android NDK path.';
+      }
+
       final prebuiltDir = Directory(
-        join(ndk!, 'toolchains', 'llvm', 'prebuilt'),
+        join(ndk, 'toolchains', 'llvm', 'prebuilt'),
       );
+      if (!prebuiltDir.existsSync()) {
+        throw 'Expected NDK prebuilt directory not found: ${prebuiltDir.path}';
+      }
+
       final prebuiltDirList = prebuiltDir
           .listSync()
           .where((file) => !basename(file.path).startsWith('.'))
           .toList();
+      if (prebuiltDirList.isEmpty) {
+        throw 'No prebuilt toolchains found in: ${prebuiltDir.path}';
+      }
       final map = {
         'armeabi-v7a': 'armv7a-linux-androideabi21-clang',
         'arm64-v8a': 'aarch64-linux-android21-clang',
         'x86': 'i686-linux-android21-clang',
         'x86_64': 'x86_64-linux-android21-clang',
       };
-      return join(prebuiltDirList.first.path, 'bin', map[buildItem.archName]);
+      final cc = map[buildItem.archName];
+      if (cc == null) {
+        throw 'Unsupported Android archName: ${buildItem.archName}';
+      }
+      return join(prebuiltDirList.first.path, 'bin', cc);
     }
     return 'gcc';
   }
@@ -289,7 +347,7 @@ class Build {
     return command.split(' ');
   }
 
-  static Future<void> getDistributor() async {
+  static Future<String> getDistributor() async {
     final distributorDir = join(
       current,
       'plugins',
@@ -312,6 +370,33 @@ class Build {
       name: 'get distributor',
       Build.getExecutable('dart pub global activate -s path $distributorDir'),
     );
+
+    // Determine pub cache bin directory. Prefer PUB_CACHE environment var,
+    // otherwise fall back to common platform defaults.
+    final env = Platform.environment;
+    String? pubCache = env['PUB_CACHE'];
+    if (pubCache == null || pubCache.isEmpty) {
+      if (Platform.isWindows) {
+        final localAppData = env['LOCALAPPDATA'] ?? env['USERPROFILE'];
+        if (localAppData != null && localAppData.isNotEmpty) {
+          pubCache = join(localAppData, 'Pub', 'Cache');
+        }
+      } else {
+        final home = env['HOME'];
+        if (home != null && home.isNotEmpty) {
+          pubCache = join(home, '.pub-cache');
+        }
+      }
+    }
+
+    final pubCacheBin = pubCache == null ? null : join(pubCache, 'bin');
+    if (pubCacheBin == null || !Directory(pubCacheBin).existsSync()) {
+      print(
+        'Warning: Could not determine pub cache bin directory. You may need to add the pub cache bin to your PATH.',
+      );
+      return pubCacheBin ?? '';
+    }
+    return pubCacheBin;
   }
 
   static void copyFile(String sourceFilePath, String destinationFilePath) {
@@ -329,6 +414,46 @@ class Build {
       print('File copied successfully!');
     } catch (e) {
       print('Failed to copy file: $e');
+    }
+  }
+
+  static Future<void> _updateVersionWithTimestamp() async {
+    final pubspecFile = File(join(current, 'pubspec.yaml'));
+    final pubspecContent = await pubspecFile.readAsString();
+    final yamlDoc = loadYaml(pubspecContent);
+
+    final version = yamlDoc['version'].toString();
+    final versionParts = version.split('+');
+    final baseVersion = versionParts[0];
+
+    // 使用UTC+8时区的时间
+    final timestamp = DateTime.now().toUtc().add(Duration(hours: 8));
+    final formattedTimestamp =
+        '${timestamp.year}'
+        '${timestamp.month.toString().padLeft(2, '0')}'
+        '${timestamp.day.toString().padLeft(2, '0')}'
+        '${timestamp.hour.toString().padLeft(2, '0')}';
+
+    final newVersion = '$baseVersion+$formattedTimestamp';
+
+    // 更新版本号
+    final newPubspecContent = pubspecContent.replaceFirst(
+      RegExp(r'version:\s*[^\n]*'),
+      'version: $newVersion',
+    );
+
+    await pubspecFile.writeAsString(newPubspecContent);
+    print('Updated version from $version to $newVersion');
+    // Ensure pub package graph and tooling cache are refreshed so builds pick up
+    // the new version (this updates .dart_tool/* such as package_graph.json).
+    try {
+      await exec(
+        getExecutable('dart pub get'),
+        name: 'dart pub get',
+        workingDirectory: current,
+      );
+    } catch (e) {
+      print('Warning: failed to run `dart pub get`: $e');
     }
   }
 }
@@ -408,12 +533,22 @@ class BuildCommand extends Command {
     String args = '',
     required String env,
   }) async {
-    await Build.getDistributor();
+    final pubCacheBin = await Build.getDistributor();
+
+    // Prepare environment with pub cache bin on PATH so flutter_distributor
+    // command is available even if the user's PATH wasn't updated.
+    final oldPath = Platform.environment['PATH'] ?? '';
+    final pathSeparator = Platform.isWindows ? ';' : ':';
+    final newPath = pubCacheBin.isNotEmpty
+        ? '$oldPath$pathSeparator$pubCacheBin'
+        : oldPath;
+
     await Build.exec(
       name: name,
       Build.getExecutable(
         'flutter_distributor package --skip-clean --platform ${target.name} --targets $targets --flutter-build-args=verbose$args --build-dart-define=APP_ENV=$env',
       ),
+      environment: {'PATH': newPath},
     );
   }
 
@@ -429,6 +564,9 @@ class BuildCommand extends Command {
 
   @override
   Future<void> run() async {
+    // 在构建前更新版本号
+    await Build._updateVersionWithTimestamp();
+
     final mode = target == Target.android ? Mode.lib : Mode.core;
     final String out = argResults?['out'] ?? (target.same ? 'app' : 'core');
     final archName = argResults?['arch'];
