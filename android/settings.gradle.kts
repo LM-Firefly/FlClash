@@ -24,7 +24,6 @@ plugins {
     id("com.google.firebase.crashlytics") version ("2.8.1") apply false
 }
 
-
 include(":app")
 include(":core")
 include(":service")
