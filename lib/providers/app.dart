@@ -54,8 +54,11 @@ class Requests extends _$Requests with AutoDisposeNotifierMixin {
   }
 }
 
-@Riverpod(keepAlive: true)
-class Providers extends _$Providers with AutoDisposeNotifierMixin {
+@riverpod
+class Providers extends _$Providers with AnyNotifierMixin {
+  @override
+  List<ExternalProvider> get origin => globalState.appState.providers;
+
   @override
   List<ExternalProvider> build() {
     return globalState.appState.providers;
@@ -71,9 +74,9 @@ class Providers extends _$Providers with AutoDisposeNotifierMixin {
       return;
     }
     if (provider == null) return;
-    final index = state.indexWhere((item) => item.name == provider.name);
+    final index = origin.indexWhere((item) => item.name == provider.name);
     if (index == -1) return;
-    final newState = List<ExternalProvider>.from(state)..[index] = provider;
+    final newState = List<ExternalProvider>.from(origin)..[index] = provider;
     value = newState;
   }
 }

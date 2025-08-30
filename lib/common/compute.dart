@@ -40,7 +40,7 @@ int computeProxyDelay({
     groups: groups,
     selectedMap: selectedMap,
   );
-  final currentDelayMap = delayMap[state.proxyName.getSafeValue(testUrl)] ?? {};
+  final currentDelayMap = delayMap[state.testUrl.getSafeValue(testUrl)] ?? {};
   final delay = currentDelayMap[state.proxyName];
   return delay ?? 0;
 }
@@ -101,6 +101,18 @@ List<Proxy> _sortOfDelay({
       selectedMap: selectedMap,
       delayMap: delayMap,
     );
+    int getPriority(int delay) {
+      if (delay > 0) return 0;
+      if (delay == 0) return 1;
+      return 2;
+    }
+
+    final aPriority = getPriority(aDelay);
+    final bPriority = getPriority(bDelay);
+
+    if (aPriority != bPriority) {
+      return aPriority.compareTo(bPriority);
+    }
     return aDelay.compareTo(bDelay);
   });
 }

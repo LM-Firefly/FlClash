@@ -413,6 +413,7 @@ int? getDelay(Ref ref, {required String proxyName, String? testUrl}) {
       return delayMap?[proxyState.proxyName];
     }),
   );
+
   return delay;
 }
 

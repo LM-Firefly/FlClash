@@ -45,7 +45,7 @@ class AppController {
     debouncer.call(
       FunctionTag.updateGroups,
       updateGroups,
-      duration: moreDuration,
+      duration: commonDuration,
     );
   }
 
