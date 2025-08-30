@@ -268,20 +268,15 @@ ProxiesListState proxiesListState(Ref ref) {
   final query = ref.watch(queryProvider(QueryTag.proxies));
   final currentGroups = ref.watch(filterGroupsStateProvider(query));
   final currentUnfoldSet = ref.watch(unfoldSetProvider);
-  final vm2 = ref.watch(
-    proxiesStyleSettingProvider.select(
-      (state) => VM2(a: state.sortType, b: state.cardType),
-    ),
+  final cardType = ref.watch(
+    proxiesStyleSettingProvider.select((state) => state.cardType),
   );
 
-  final sortNum = ref.watch(sortNumProvider);
   final columns = ref.watch(getProxiesColumnsProvider);
   return ProxiesListState(
     groups: currentGroups.value,
     currentUnfoldSet: currentUnfoldSet,
-    proxiesSortType: vm2.a,
-    proxyCardType: vm2.b,
-    sortNum: sortNum,
+    proxyCardType: cardType,
     columns: columns,
   );
 }
@@ -293,19 +288,14 @@ ProxiesTabState proxiesTabState(Ref ref) {
   final currentGroupName = ref.watch(
     currentProfileProvider.select((state) => state?.currentGroupName),
   );
-  final vm2 = ref.watch(
-    proxiesStyleSettingProvider.select(
-      (state) => VM2(a: state.sortType, b: state.cardType),
-    ),
+  final cardType = ref.watch(
+    proxiesStyleSettingProvider.select((state) => state.cardType),
   );
-  final sortNum = ref.watch(sortNumProvider);
   final columns = ref.watch(getProxiesColumnsProvider);
   return ProxiesTabState(
     groups: currentGroups.value,
     currentGroupName: currentGroupName,
-    proxiesSortType: vm2.a,
-    proxyCardType: vm2.b,
-    sortNum: sortNum,
+    proxyCardType: cardType,
     columns: columns,
   );
 }
@@ -416,12 +406,11 @@ String getRealTestUrl(Ref ref, [String? testUrl]) {
 @riverpod
 int? getDelay(Ref ref, {required String proxyName, String? testUrl}) {
   final currentTestUrl = ref.watch(getRealTestUrlProvider(testUrl));
-  final proxyCardState = ref.watch(getProxyCardStateProvider(proxyName));
+  final proxyState = ref.watch(realSelectedProxyStateProvider(proxyName));
   final delay = ref.watch(
     delayDataSourceProvider.select((state) {
-      final delayMap =
-          state[proxyCardState.testUrl.getSafeValue(currentTestUrl)];
-      return delayMap?[proxyCardState.proxyName];
+      final delayMap = state[proxyState.testUrl.getSafeValue(currentTestUrl)];
+      return delayMap?[proxyState.proxyName];
     }),
   );
   return delay;
@@ -470,41 +459,14 @@ int getProxiesColumns(Ref ref) {
   return utils.getProxiesColumns(viewWidth, proxiesLayout);
 }
 
-ProxyCardState _getProxyCardState(
-  List<Group> groups,
-  SelectedMap selectedMap,
-  ProxyCardState proxyDelayState,
-) {
-  if (proxyDelayState.proxyName.isEmpty) return proxyDelayState;
-  final index = groups.indexWhere(
-    (element) => element.name == proxyDelayState.proxyName,
-  );
-  if (index == -1) return proxyDelayState;
-  final group = groups[index];
-  final currentSelectedName = group.getCurrentSelectedName(
-    selectedMap[proxyDelayState.proxyName] ?? '',
-  );
-  if (currentSelectedName.isEmpty) {
-    return proxyDelayState;
-  }
-  return _getProxyCardState(
-    groups,
-    selectedMap,
-    proxyDelayState.copyWith(
-      proxyName: currentSelectedName,
-      testUrl: group.testUrl,
-    ),
-  );
-}
-
 @riverpod
-ProxyCardState getProxyCardState(Ref ref, String proxyName) {
+SelectedProxyState realSelectedProxyState(Ref ref, String proxyName) {
   final groups = ref.watch(groupsProvider);
   final selectedMap = ref.watch(selectedMapProvider);
-  return _getProxyCardState(
-    groups,
-    selectedMap,
-    ProxyCardState(proxyName: proxyName),
+  return computeRealSelectedProxyState(
+    proxyName,
+    groups: groups,
+    selectedMap: selectedMap,
   );
 }
 
@@ -534,7 +496,7 @@ String getProxyDesc(Ref ref, Proxy proxy) {
     final groups = ref.watch(groupsProvider);
     final index = groups.indexWhere((element) => element.name == proxy.name);
     if (index == -1) return proxy.type;
-    final state = ref.watch(getProxyCardStateProvider(proxy.name));
+    final state = ref.watch(realSelectedProxyStateProvider(proxy.name));
     return "${proxy.type}(${state.proxyName.isNotEmpty ? state.proxyName : '*'})";
   }
 }
@@ -636,6 +598,18 @@ VM2<bool, bool> autoSetSystemDnsState(Ref ref) {
     networkSettingProvider.select((state) => state.autoSetSystemDns),
   );
   return VM2(a: isStart ? realTunEnable : false, b: autoSetSystemDns);
+}
+
+@riverpod
+VM3<bool, int, ProxiesSortType> needUpdateGroups(Ref ref) {
+  final isProxies = ref.watch(
+    currentPageLabelProvider.select((state) => state == PageLabel.proxies),
+  );
+  final sortNum = ref.watch(sortNumProvider);
+  final sortType = ref.watch(
+    proxiesStyleSettingProvider.select((state) => state.sortType),
+  );
+  return VM3(a: isProxies, b: sortNum, c: sortType);
 }
 
 @riverpod

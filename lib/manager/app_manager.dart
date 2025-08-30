@@ -43,6 +43,11 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
         globalState.appController.savePreferencesDebounce();
       }
     });
+    ref.listenManual(needUpdateGroupsProvider, (prev, next) {
+      if (prev != next) {
+        globalState.appController.updateGroupsDebounce();
+      }
+    });
     if (window == null) {
       return;
     }

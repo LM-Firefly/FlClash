@@ -102,9 +102,7 @@ abstract class ProxiesListState with _$ProxiesListState {
   const factory ProxiesListState({
     required List<Group> groups,
     required Set<String> currentUnfoldSet,
-    required ProxiesSortType proxiesSortType,
     required ProxyCardType proxyCardType,
-    required num sortNum,
     required int columns,
   }) = _ProxiesListState;
 }
@@ -114,9 +112,7 @@ abstract class ProxiesTabState with _$ProxiesTabState {
   const factory ProxiesTabState({
     required List<Group> groups,
     required String? currentGroupName,
-    required ProxiesSortType proxiesSortType,
     required ProxyCardType proxyCardType,
-    required num sortNum,
     required int columns,
   }) = _ProxiesTabState;
 }
@@ -233,9 +229,11 @@ abstract class DashboardState with _$DashboardState {
 }
 
 @freezed
-abstract class ProxyCardState with _$ProxyCardState {
-  const factory ProxyCardState({required String proxyName, String? testUrl}) =
-      _ProxyCardState;
+abstract class SelectedProxyState with _$SelectedProxyState {
+  const factory SelectedProxyState({
+    required String proxyName,
+    String? testUrl,
+  }) = _SelectedProxyState;
 }
 
 @freezed

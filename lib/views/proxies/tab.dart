@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/models/config.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
@@ -9,7 +10,6 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/common.dart';
 import 'card.dart';
 import 'common.dart';
 
@@ -186,7 +186,6 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
         group: group,
         columns: state.columns,
         cardType: state.proxyCardType,
-        sortType: state.proxiesSortType,
       );
     }).toList();
     _keyMap = keyMap;
@@ -252,14 +251,12 @@ class ProxyGroupView extends ConsumerStatefulWidget {
   final Group group;
   final int columns;
   final ProxyCardType cardType;
-  final ProxiesSortType sortType;
 
   const ProxyGroupView({
     super.key,
     required this.group,
     required this.columns,
     required this.cardType,
-    required this.sortType,
   });
 
   @override
@@ -316,45 +313,36 @@ class _ProxyGroupViewState extends ConsumerState<ProxyGroupView> {
   Widget build(BuildContext context) {
     final group = widget.group;
     final proxies = group.all;
-    final sortedProxies = globalState.appController.getSortProxies(
-      proxies: proxies,
-      sortType: widget.sortType,
-      testUrl: group.testUrl,
-    );
-    currentProxies = sortedProxies;
     testUrl = group.testUrl;
-
-    return Align(
-      alignment: Alignment.topCenter,
-      child: CommonScrollBar(
+    currentProxies = proxies;
+    return CommonScrollBar(
+      controller: _controller,
+      child: GridView.builder(
+        key: _getPageStorageKey(),
         controller: _controller,
-        child: GridView.builder(
-          key: _getPageStorageKey(),
-          controller: _controller,
-          padding: const EdgeInsets.only(
-            top: 16,
-            left: 16,
-            right: 16,
-            bottom: 96,
-          ),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: widget.columns,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            mainAxisExtent: getItemHeight(widget.cardType),
-          ),
-          itemCount: sortedProxies.length,
-          itemBuilder: (_, index) {
-            final proxy = sortedProxies[index];
-            return ProxyCard(
-              testUrl: group.testUrl,
-              groupType: group.type,
-              type: widget.cardType,
-              proxy: proxy,
-              groupName: group.name,
-            );
-          },
+        padding: const EdgeInsets.only(
+          top: 16,
+          left: 16,
+          right: 16,
+          bottom: 96,
         ),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: widget.columns,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          mainAxisExtent: getItemHeight(widget.cardType),
+        ),
+        itemCount: currentProxies.length,
+        itemBuilder: (_, index) {
+          final proxy = currentProxies[index];
+          return ProxyCard(
+            testUrl: group.testUrl,
+            groupType: group.type,
+            type: widget.cardType,
+            proxy: proxy,
+            groupName: group.name,
+          );
+        },
       ),
     );
   }

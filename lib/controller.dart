@@ -42,7 +42,11 @@ class AppController {
   }
 
   void updateGroupsDebounce() {
-    debouncer.call(FunctionTag.updateGroups, updateGroups);
+    debouncer.call(
+      FunctionTag.updateGroups,
+      updateGroups,
+      duration: moreDuration,
+    );
   }
 
   void addCheckIpNumDebounce() {
@@ -231,10 +235,6 @@ class AppController {
     return currentGroupName;
   }
 
-  ProxyCardState getProxyCardState(String proxyName) {
-    return _ref.read(getProxyCardStateProvider(proxyName));
-  }
-
   String? getSelectedProxyName(String groupName) {
     return _ref.read(getSelectedProxyNameProvider(groupName));
   }
@@ -366,7 +366,22 @@ class AppController {
     try {
       _ref.read(groupsProvider.notifier).value = await retry(
         task: () async {
-          return await coreController.getProxiesGroups();
+          final sortType = _ref.read(
+            proxiesStyleSettingProvider.select((state) => state.sortType),
+          );
+          final delayMap = _ref.read(delayDataSourceProvider);
+          final testUrl = _ref.read(
+            appSettingProvider.select((state) => state.testUrl),
+          );
+          final selectedMap = _ref.read(
+            currentProfileProvider.select((state) => state?.selectedMap ?? {}),
+          );
+          return await coreController.getProxiesGroups(
+            selectedMap: selectedMap,
+            sortType: sortType,
+            delayMap: delayMap,
+            defaultTestUrl: testUrl,
+          );
         },
         retryIf: (res) => res.isEmpty,
       );
@@ -691,47 +706,7 @@ class AppController {
     _ref.read(providersProvider.notifier).setProvider(provider);
   }
 
-  List<Proxy> _sortOfName(List<Proxy> proxies) {
-    return List.of(proxies)..sort(
-      (a, b) =>
-          utils.sortByChar(utils.getPinyin(a.name), utils.getPinyin(b.name)),
-    );
-  }
-
-  List<Proxy> _sortOfDelay({required List<Proxy> proxies, String? testUrl}) {
-    return List.of(proxies)..sort((a, b) {
-      final aDelay = _ref.read(
-        getDelayProvider(proxyName: a.name, testUrl: testUrl),
-      );
-      final bDelay = _ref.read(
-        getDelayProvider(proxyName: b.name, testUrl: testUrl),
-      );
-      if (aDelay == null && bDelay == null) {
-        return 0;
-      }
-      if (aDelay == null || aDelay == -1) {
-        return 1;
-      }
-      if (bDelay == null || bDelay == -1) {
-        return -1;
-      }
-      return aDelay.compareTo(bDelay);
-    });
-  }
-
-  List<Proxy> getSortProxies({
-    required List<Proxy> proxies,
-    required ProxiesSortType sortType,
-    String? testUrl,
-  }) {
-    return switch (sortType) {
-      ProxiesSortType.none => proxies,
-      ProxiesSortType.delay => _sortOfDelay(proxies: proxies, testUrl: testUrl),
-      ProxiesSortType.name => _sortOfName(proxies),
-    };
-  }
-
-  Future<Null> clearEffect(String profileId) async {
+  Future<void> clearEffect(String profileId) async {
     final profilePath = await appPath.getProfilePath(profileId);
     final providersDirPath = await appPath.getProvidersDirPath(profileId);
     return await Isolate.run(() async {

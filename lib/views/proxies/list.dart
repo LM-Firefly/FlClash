@@ -28,7 +28,6 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     null,
   );
   List<double> _headerOffset = [];
-  GroupNameProxiesMap _lastGroupNameProxiesMap = {};
 
   @override
   void initState() {
@@ -118,10 +117,8 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     required int columns,
     required Set<String> currentUnfoldSet,
     required ProxyCardType cardType,
-    required ProxiesSortType sortType,
   }) {
     final items = <Widget>[];
-    final GroupNameProxiesMap groupNameProxiesMap = {};
     for (final group in groups) {
       final groupName = group.name;
       final isExpand = currentUnfoldSet.contains(groupName);
@@ -137,13 +134,8 @@ class _ProxiesListViewState extends State<ProxiesListView> {
         const SizedBox(height: 8),
       ]);
       if (isExpand) {
-        final sortedProxies = globalState.appController.getSortProxies(
-          proxies: group.all,
-          sortType: sortType,
-          testUrl: group.testUrl,
-        );
-        groupNameProxiesMap[groupName] = sortedProxies;
-        final chunks = sortedProxies.chunks(columns);
+        final proxies = group.all;
+        final chunks = proxies.chunks(columns);
         final rows = chunks
             .map<Widget>((proxies) {
               final children = proxies
@@ -174,7 +166,6 @@ class _ProxiesListViewState extends State<ProxiesListView> {
         items.addAll([...rows, const SizedBox(height: 8)]);
       }
     }
-    _lastGroupNameProxiesMap = groupNameProxiesMap;
     return items;
   }
 
@@ -206,11 +197,12 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     }
     final appController = globalState.appController;
     final currentGroups = appController.getCurrentGroups();
-    final groupNames = currentGroups.map((e) => e.name).toList();
-    final findIndex = groupNames.indexWhere((item) => item == groupName);
+    final findIndex = currentGroups.indexWhere(
+      (item) => item.name == groupName,
+    );
     final index = findIndex != -1 ? findIndex : 0;
     final currentInitOffset = _headerOffset[index];
-    final proxies = _lastGroupNameProxiesMap[groupName];
+    final proxies = currentGroups.getGroup(groupName)?.all;
     _controller.animateTo(
       min(
         currentInitOffset +
@@ -243,7 +235,6 @@ class _ProxiesListViewState extends State<ProxiesListView> {
           currentUnfoldSet: state.currentUnfoldSet,
           columns: state.columns,
           cardType: state.proxyCardType,
-          sortType: state.proxiesSortType,
         );
         final itemsOffset = _getItemHeightList(items, state.proxyCardType);
         return CommonScrollBar(

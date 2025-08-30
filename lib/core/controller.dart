@@ -90,25 +90,39 @@ class CoreController {
     return await _interface.setupConfig(params);
   }
 
-  Future<List<Group>> getProxiesGroups() async {
+  Future<List<Group>> getProxiesGroups({
+    required ProxiesSortType sortType,
+    required DelayMap delayMap,
+    required SelectedMap selectedMap,
+    required String defaultTestUrl,
+  }) async {
     final proxies = await _interface.getProxies();
-    if (proxies.isEmpty) return [];
-    final groupNames = [
-      UsedProxy.GLOBAL.name,
-      ...(proxies[UsedProxy.GLOBAL.name]['all'] as List).where((e) {
-        final proxy = proxies[e] ?? {};
-        return GroupTypeExtension.valueList.contains(proxy['type']);
-      }),
-    ];
-    final groupsRaw = groupNames.map((groupName) {
-      final group = proxies[groupName];
-      group['all'] = ((group['all'] ?? []) as List)
-          .map((name) => proxies[name])
-          .where((proxy) => proxy != null)
-          .toList();
-      return group;
-    }).toList();
-    return groupsRaw.map((e) => Group.fromJson(e)).toList();
+    return Isolate.run<List<Group>>(() {
+      if (proxies.isEmpty) return [];
+      final groupNames = [
+        UsedProxy.GLOBAL.name,
+        ...(proxies[UsedProxy.GLOBAL.name]['all'] as List).where((e) {
+          final proxy = proxies[e] ?? {};
+          return GroupTypeExtension.valueList.contains(proxy['type']);
+        }),
+      ];
+      final groupsRaw = groupNames.map((groupName) {
+        final group = proxies[groupName];
+        group['all'] = ((group['all'] ?? []) as List)
+            .map((name) => proxies[name])
+            .where((proxy) => proxy != null)
+            .toList();
+        return group;
+      }).toList();
+      final groups = groupsRaw.map((e) => Group.fromJson(e)).toList();
+      return computeSort(
+        groups: groups,
+        sortType: sortType,
+        delayMap: delayMap,
+        selectedMap: selectedMap,
+        defaultTestUrl: defaultTestUrl,
+      );
+    });
   }
 
   FutureOr<String> changeProxy(ChangeProxyParams changeProxyParams) async {
