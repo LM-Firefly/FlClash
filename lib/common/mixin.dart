@@ -24,7 +24,7 @@ mixin AutoDisposeNotifierMixin<T> on AnyNotifier<T, T> {
 mixin AnyNotifierMixin<T> on AnyNotifier<T, T> {
   T get origin;
 
-  set value(T value) {
+  set origin(T value) {
     if (ref.mounted) {
       state = value;
     } else {

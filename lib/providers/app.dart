@@ -77,7 +77,7 @@ class Providers extends _$Providers with AnyNotifierMixin {
     final index = origin.indexWhere((item) => item.name == provider.name);
     if (index == -1) return;
     final newState = List<ExternalProvider>.from(origin)..[index] = provider;
-    value = newState;
+    origin = newState;
   }
 }
 
