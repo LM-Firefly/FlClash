@@ -41,12 +41,8 @@ class AppController {
     });
   }
 
-  void updateGroupsDebounce() {
-    debouncer.call(
-      FunctionTag.updateGroups,
-      updateGroups,
-      duration: commonDuration,
-    );
+  void updateGroupsDebounce([Duration? duration]) {
+    debouncer.call(FunctionTag.updateGroups, updateGroups, duration: duration);
   }
 
   void addCheckIpNumDebounce() {
@@ -155,7 +151,7 @@ class AppController {
   }
 
   Future<void> updateProviders() async {
-    _ref.read(providersProvider.notifier).origin = await coreController
+    _ref.read(providersProvider.notifier).value = await coreController
         .getExternalProviders();
   }
 

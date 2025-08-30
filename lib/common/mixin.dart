@@ -1,4 +1,5 @@
 import 'package:riverpod/riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 mixin AutoDisposeNotifierMixin<T> on AnyNotifier<T, T> {
   set value(T value) {
@@ -22,9 +23,9 @@ mixin AutoDisposeNotifierMixin<T> on AnyNotifier<T, T> {
 }
 
 mixin AnyNotifierMixin<T> on AnyNotifier<T, T> {
-  T get origin;
+  T get value;
 
-  set origin(T value) {
+  set value(T value) {
     if (ref.mounted) {
       state = value;
     } else {

@@ -45,7 +45,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
     });
     ref.listenManual(needUpdateGroupsProvider, (prev, next) {
       if (prev != next) {
-        globalState.appController.updateGroupsDebounce();
+        globalState.appController.updateGroupsDebounce(commonDuration);
       }
     });
     if (window == null) {
