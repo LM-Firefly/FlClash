@@ -197,7 +197,7 @@ final class ProvidersProvider
   }
 }
 
-String _$providersHash() => r'cc17411bb49dc943405a92ec7ac79a343612a0c3';
+String _$providersHash() => r'5a7deb2b8e8ce4c126b3bb1044717b9779a1acd2';
 
 abstract class _$Providers extends $Notifier<List<ExternalProvider>> {
   List<ExternalProvider> build();
