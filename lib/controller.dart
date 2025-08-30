@@ -155,7 +155,7 @@ class AppController {
   }
 
   Future<void> updateProviders() async {
-    _ref.read(providersProvider.notifier).value = await coreController
+    _ref.read(providersProvider.notifier).origin = await coreController
         .getExternalProviders();
   }
 
