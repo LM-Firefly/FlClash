@@ -7,7 +7,7 @@
         <service
             android:name="com.follow.clash.service.VpnService"
             android:exported="false"
-            android:foregroundServiceType="dataSync"
+            android:foregroundServiceType="specialUse"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:process=":background">
             <intent-filter>
@@ -21,7 +21,7 @@
         <service
             android:name="com.follow.clash.service.CommonService"
             android:exported="false"
-            android:foregroundServiceType="dataSync"
+            android:foregroundServiceType="specialUse"
             android:process=":background">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
@@ -32,5 +32,17 @@
             android:name="com.follow.clash.service.RemoteService"
             android:exported="false"
             android:process=":background" />
+
+        <provider
+            android:name=".FilesProvider"
+            android:authorities="${applicationId}.files"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS"
+            android:process=":background">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
     </application>
 </manifest>

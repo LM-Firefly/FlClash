@@ -1,15 +1,13 @@
-package com.follow.clash
+package com.follow.clash.service
 
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
-import android.provider.DocumentsContract.Document
-import android.provider.DocumentsContract.Root
+import android.provider.DocumentsContract
 import android.provider.DocumentsProvider
 import java.io.File
 import java.io.FileNotFoundException
-
 
 class FilesProvider : DocumentsProvider() {
 
@@ -17,19 +15,19 @@ class FilesProvider : DocumentsProvider() {
         private const val DEFAULT_ROOT_ID = "0"
 
         private val DEFAULT_DOCUMENT_COLUMNS = arrayOf(
-            Document.COLUMN_DOCUMENT_ID,
-            Document.COLUMN_DISPLAY_NAME,
-            Document.COLUMN_MIME_TYPE,
-            Document.COLUMN_FLAGS,
-            Document.COLUMN_SIZE,
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_MIME_TYPE,
+            DocumentsContract.Document.COLUMN_FLAGS,
+            DocumentsContract.Document.COLUMN_SIZE,
         )
         private val DEFAULT_ROOT_COLUMNS = arrayOf(
-            Root.COLUMN_ROOT_ID,
-            Root.COLUMN_FLAGS,
-            Root.COLUMN_ICON,
-            Root.COLUMN_TITLE,
-            Root.COLUMN_SUMMARY,
-            Root.COLUMN_DOCUMENT_ID
+            DocumentsContract.Root.COLUMN_ROOT_ID,
+            DocumentsContract.Root.COLUMN_FLAGS,
+            DocumentsContract.Root.COLUMN_ICON,
+            DocumentsContract.Root.COLUMN_TITLE,
+            DocumentsContract.Root.COLUMN_SUMMARY,
+            DocumentsContract.Root.COLUMN_DOCUMENT_ID
         )
     }
 
@@ -40,12 +38,12 @@ class FilesProvider : DocumentsProvider() {
     override fun queryRoots(projection: Array<String>?): Cursor {
         return MatrixCursor(projection ?: DEFAULT_ROOT_COLUMNS).apply {
             newRow().apply {
-                add(Root.COLUMN_ROOT_ID, DEFAULT_ROOT_ID)
-                add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY)
-                add(Root.COLUMN_ICON, R.mipmap.ic_launcher)
-                add(Root.COLUMN_TITLE, "FlClash")
-                add(Root.COLUMN_SUMMARY, "Data")
-                add(Root.COLUMN_DOCUMENT_ID, "/")
+                add(DocumentsContract.Root.COLUMN_ROOT_ID, DEFAULT_ROOT_ID)
+                add(DocumentsContract.Root.COLUMN_FLAGS, DocumentsContract.Root.FLAG_LOCAL_ONLY)
+                add(DocumentsContract.Root.COLUMN_ICON, R.drawable.ic_service)
+                add(DocumentsContract.Root.COLUMN_TITLE, "FlClash")
+                add(DocumentsContract.Root.COLUMN_SUMMARY, "Data")
+                add(DocumentsContract.Root.COLUMN_DOCUMENT_ID, "/")
             }
         }
     }
@@ -87,20 +85,20 @@ class FilesProvider : DocumentsProvider() {
 
     private fun includeFile(result: MatrixCursor, file: File) {
         result.newRow().apply {
-            add(Document.COLUMN_DOCUMENT_ID, file.absolutePath)
-            add(Document.COLUMN_DISPLAY_NAME, file.name)
-            add(Document.COLUMN_SIZE, file.length())
+            add(DocumentsContract.Document.COLUMN_DOCUMENT_ID, file.absolutePath)
+            add(DocumentsContract.Document.COLUMN_DISPLAY_NAME, file.name)
+            add(DocumentsContract.Document.COLUMN_SIZE, file.length())
             add(
-                Document.COLUMN_FLAGS,
-                Document.FLAG_SUPPORTS_WRITE or Document.FLAG_SUPPORTS_DELETE
+                DocumentsContract.Document.COLUMN_FLAGS,
+                DocumentsContract.Document.FLAG_SUPPORTS_WRITE or DocumentsContract.Document.FLAG_SUPPORTS_DELETE
             )
-            add(Document.COLUMN_MIME_TYPE, getDocumentType(file))
+            add(DocumentsContract.Document.COLUMN_MIME_TYPE, getDocumentType(file))
         }
     }
 
     private fun getDocumentType(file: File): String {
         return if (file.isDirectory) {
-            Document.MIME_TYPE_DIR
+            DocumentsContract.Document.MIME_TYPE_DIR
         } else {
             "application/octet-stream"
         }

@@ -13,7 +13,7 @@ import android.content.Context.RECEIVER_NOT_EXPORTED
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.os.Build
 import android.os.IBinder
 import android.os.RemoteException
@@ -37,7 +37,7 @@ val KClass<*>.intent: Intent
 
 fun Service.startForegroundCompat(id: Int, notification: Notification) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        startForeground(id, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        startForeground(id, notification, FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
     } else {
         startForeground(id, notification)
     }
