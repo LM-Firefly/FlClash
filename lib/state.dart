@@ -133,6 +133,8 @@ class GlobalState {
       utils.getLocaleForString(config.appSetting.locale) ??
           WidgetsBinding.instance.platformDispatcher.locale,
     );
+    await coreController.preload();
+    await service?.syncAndroidState(globalState.getAndroidState());
   }
 
   String get ua => config.patchClashConfig.globalUa ?? packageInfo.ua;
