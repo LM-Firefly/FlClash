@@ -8,6 +8,7 @@ import 'package:fl_clash/common/archive.dart';
 import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/plugins/app.dart';
+import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/dialog.dart';
@@ -533,6 +534,8 @@ class AppController {
         );
       }
     };
+    await coreController.preload();
+    await service?.syncAndroidState(globalState.getAndroidState());
     updateTray(true);
     await _initCore();
     await _initStatus();

@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 class ServiceDelegate<T>(
     private val intent: Intent,
     private val onServiceDisconnected: (() -> Unit)? = null,
-    private val onServiceCrash: (() -> Unit)? = null,
     private val interfaceCreator: (IBinder) -> T,
 ) : CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Default) {
 
@@ -33,14 +32,10 @@ class ServiceDelegate<T>(
                 _service.value = event.binder.let(interfaceCreator)
             }
 
-            is BindServiceEvent.Disconnected -> {
+            else -> {
+                bindingState.set(false)
                 _service.value = null
                 onServiceDisconnected?.invoke()
-            }
-
-            is BindServiceEvent.Crashed -> {
-                _service.value = null
-                onServiceCrash?.invoke()
             }
         }
     }

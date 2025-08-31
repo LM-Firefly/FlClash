@@ -104,7 +104,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
         }
     }
 
-    private fun onServiceCrash() {
+    private fun onServiceDisconnected() {
         State.runStateFlow.tryEmit(RunState.STOP)
         flutterMethodChannel.invokeMethodOnMainThread<Any>("crash", null)
     }
@@ -132,7 +132,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
             }
             result.success(true)
         }
-        Service.onServiceCrash = ::onServiceCrash
+        Service.onServiceDisconnected = ::onServiceDisconnected
     }
 
     private fun handleGetRunTime(result: MethodChannel.Result) {

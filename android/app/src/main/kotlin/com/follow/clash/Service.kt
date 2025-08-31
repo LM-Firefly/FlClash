@@ -12,16 +12,16 @@ import com.follow.clash.service.models.VpnOptions
 object Service {
     private val delegate by lazy {
         ServiceDelegate<IRemoteInterface>(
-            RemoteService::class.intent, ::handleOnServiceCrash
+            RemoteService::class.intent, ::handleServiceDisconnected
         ) {
             IRemoteInterface.Stub.asInterface(it)
         }
     }
 
-    var onServiceCrash: (() -> Unit)? = null
+    var onServiceDisconnected: (() -> Unit)? = null
 
-    private fun handleOnServiceCrash() {
-        onServiceCrash?.let {
+    private fun handleServiceDisconnected() {
+        onServiceDisconnected?.let {
             it()
         }
     }
