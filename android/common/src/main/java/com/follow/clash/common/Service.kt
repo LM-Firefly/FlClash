@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ServiceDelegate<T>(
     private val intent: Intent,
@@ -22,12 +21,11 @@ class ServiceDelegate<T>(
     private val interfaceCreator: (IBinder) -> T,
 ) : CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Default) {
 
-    val bindLock = Mutex()
+    private val bindingState = AtomicBoolean(false)
 
     private val _service = MutableStateFlow<T?>(null)
 
     val service: StateFlow<T?> = _service
-
     private var job: Job? = null
     private fun handleBindEvent(event: BindServiceEvent<IBinder>) {
         when (event) {
@@ -48,11 +46,8 @@ class ServiceDelegate<T>(
     }
 
     fun bind() {
-        job = launch {
-            bindLock.withLock {
-                if (_service.value != null) {
-                    return@launch
-                }
+        if (bindingState.compareAndSet(false, true)) {
+            job = launch {
                 GlobalState.application.bindServiceFlow<IBinder>(intent).collect { it ->
                     handleBindEvent(it)
                 }
@@ -72,12 +67,10 @@ class ServiceDelegate<T>(
     }
 
     fun unbind() {
-        launch {
-            bindLock.withLock {
-                _service.value = null
-                job?.cancel()
-                job = null
-            }
+        if (bindingState.compareAndSet(true, false)) {
+            _service.value = null
+            job?.cancel()
+            job = null
         }
     }
 }
