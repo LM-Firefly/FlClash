@@ -9,10 +9,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.retryWhen
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class ServiceDelegate<T>(
     private val intent: Intent,
@@ -21,11 +22,13 @@ class ServiceDelegate<T>(
     private val interfaceCreator: (IBinder) -> T,
 ) : CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Default) {
 
+    val bindLock = Mutex()
+
     private val _service = MutableStateFlow<T?>(null)
 
     val service: StateFlow<T?> = _service
 
-    private var bindJob: Job? = null
+    private var job: Job? = null
     private fun handleBindEvent(event: BindServiceEvent<IBinder>) {
         when (event) {
             is BindServiceEvent.Connected -> {
@@ -45,34 +48,36 @@ class ServiceDelegate<T>(
     }
 
     fun bind() {
-        unbind()
-        bindJob = launch {
-            GlobalState.application.bindServiceFlow<IBinder>(intent).collect { it ->
-                handleBindEvent(it)
+        job = launch {
+            bindLock.withLock {
+                if (_service.value != null) {
+                    return@launch
+                }
+                GlobalState.application.bindServiceFlow<IBinder>(intent).collect { it ->
+                    handleBindEvent(it)
+                }
             }
         }
     }
 
     suspend inline fun <R> useService(
-        retries: Int = 10,
-        delayMillis: Long = 200,
-        crossinline block: (T) -> R
-    ): Result<R> {
-        return runCatching {
-            service.filterNotNull()
-                .retryWhen { _, attempt ->
-                    (attempt < retries).also {
-                        if (it) delay(delayMillis)
-                    }
-                }.first().let {
-                    block(it)
-                }
-        }
+        retries: Int = 10, delayMillis: Long = 200, crossinline block: (T) -> R
+    ) {
+        flow {
+            repeat(retries + 1) {
+                service.value?.let { emit(it) }
+                delay(delayMillis)
+            }
+        }.firstOrNull()?.let(block)
     }
 
     fun unbind() {
-        _service.value = null
-        bindJob?.cancel()
-        bindJob = null
+        launch {
+            bindLock.withLock {
+                _service.value = null
+                job?.cancel()
+                job = null
+            }
+        }
     }
 }

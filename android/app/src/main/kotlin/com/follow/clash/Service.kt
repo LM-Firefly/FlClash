@@ -8,7 +8,6 @@ import com.follow.clash.service.IRemoteInterface
 import com.follow.clash.service.RemoteService
 import com.follow.clash.service.models.NotificationParams
 import com.follow.clash.service.models.VpnOptions
-import java.util.concurrent.atomic.AtomicBoolean
 
 object Service {
     private val delegate by lazy {
@@ -22,18 +21,13 @@ object Service {
     var onServiceCrash: (() -> Unit)? = null
 
     private fun handleOnServiceCrash() {
-        bindingState.set(false)
         onServiceCrash?.let {
             it()
         }
     }
 
-    private val bindingState = AtomicBoolean(false)
-
     fun bind() {
-        if (bindingState.compareAndSet(false, true)) {
-            delegate.bind()
-        }
+        delegate.bind()
     }
 
     suspend fun invokeAction(
