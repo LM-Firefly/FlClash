@@ -39,7 +39,7 @@ class ServiceDelegate<T>(
         }
     }
 
-    private fun bind() {
+    fun bind() {
         if (_bindingState.compareAndSet(false, true)) {
             job = launch {
                 GlobalState.application.bindServiceFlow<IBinder>(intent).collect { it ->
@@ -49,14 +49,11 @@ class ServiceDelegate<T>(
         }
     }
 
-    suspend fun <R> useService(
-        timeoutMillis: Long = 5000,
-        block: (T) -> R
+    suspend inline fun <R> useService(
+        timeoutMillis: Long = 5000, crossinline block: (T) -> R
     ): R? {
-        bind()
-        _service.value?.let { return block(it) }
         return withTimeoutOrNull(timeoutMillis) {
-            _service.filterNotNull().first().let(block)
+            service.filterNotNull().first().let(block)
         }
     }
 

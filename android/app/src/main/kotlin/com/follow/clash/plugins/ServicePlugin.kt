@@ -17,6 +17,7 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -125,6 +126,10 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
     }
 
     fun handleInit(result: MethodChannel.Result) {
+        launch {
+            delay(1000)
+            Service.bind()
+        }
         launch {
             Service.setMessageCallback {
                 handleSendEvent(it)

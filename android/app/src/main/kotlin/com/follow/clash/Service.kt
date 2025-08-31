@@ -26,6 +26,10 @@ object Service {
         }
     }
 
+    fun bind() {
+        delegate.bind()
+    }
+
     suspend fun invokeAction(
         data: String, cb: (result: ByteArray?, isSuccess: Boolean) -> Unit
     ) {

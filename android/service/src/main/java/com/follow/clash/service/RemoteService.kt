@@ -49,6 +49,7 @@ class RemoteService : Service(),
                     }
                 }
                 intent = nextIntent
+                delegate?.bind()
             }
             delegate?.useService { service ->
                 service.start()
