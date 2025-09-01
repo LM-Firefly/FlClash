@@ -119,9 +119,9 @@ object State {
                     return@launch
                 }
                 appPlugin?.prepare(options.enable) {
+                    runTime = System.currentTimeMillis()
                     Service.startService(options, true)
                     runStateFlow.tryEmit(RunState.START)
-                    runTime = System.currentTimeMillis()
                 }
             }
         }

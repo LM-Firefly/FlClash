@@ -8,32 +8,26 @@ import com.follow.clash.service.IRemoteInterface
 import com.follow.clash.service.RemoteService
 import com.follow.clash.service.models.NotificationParams
 import com.follow.clash.service.models.VpnOptions
-import java.util.concurrent.atomic.AtomicBoolean
 
 object Service {
     private val delegate by lazy {
         ServiceDelegate<IRemoteInterface>(
-            RemoteService::class.intent, ::handleOnServiceCrash
+            RemoteService::class.intent, ::handleServiceDisconnected
         ) {
             IRemoteInterface.Stub.asInterface(it)
         }
     }
 
-    var onServiceCrash: (() -> Unit)? = null
+    var onServiceDisconnected: (() -> Unit)? = null
 
-    private fun handleOnServiceCrash() {
-        bindingState.set(false)
-        onServiceCrash?.let {
+    private fun handleServiceDisconnected() {
+        onServiceDisconnected?.let {
             it()
         }
     }
 
-    private val bindingState = AtomicBoolean(false)
-
     fun bind() {
-        if (bindingState.compareAndSet(false, true)) {
-            delegate.bind()
-        }
+        delegate.bind()
     }
 
     suspend fun invokeAction(

@@ -17,6 +17,7 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -104,7 +105,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
         }
     }
 
-    private fun onServiceCrash() {
+    private fun onServiceDisconnected() {
         State.runStateFlow.tryEmit(RunState.STOP)
         flutterMethodChannel.invokeMethodOnMainThread<Any>("crash", null)
     }
@@ -125,14 +126,17 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
     }
 
     fun handleInit(result: MethodChannel.Result) {
-        Service.bind()
+        launch {
+            delay(1000)
+            Service.bind()
+        }
         launch {
             Service.setMessageCallback {
                 handleSendEvent(it)
             }
             result.success(true)
         }
-        Service.onServiceCrash = ::onServiceCrash
+        Service.onServiceDisconnected = ::onServiceDisconnected
     }
 
     private fun handleGetRunTime(result: MethodChannel.Result) {

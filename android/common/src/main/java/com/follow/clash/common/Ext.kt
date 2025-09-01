@@ -126,19 +126,13 @@ fun Context.receiveBroadcastFlow(
 }
 
 
-sealed class BindServiceEvent<out T : IBinder> {
-    data class Connected<T : IBinder>(val binder: T) : BindServiceEvent<T>()
-    object Disconnected : BindServiceEvent<Nothing>()
-    object Crashed : BindServiceEvent<Nothing>()
-}
-
 inline fun <reified T : IBinder> Context.bindServiceFlow(
     intent: Intent,
     flags: Int = Context.BIND_AUTO_CREATE,
-): Flow<BindServiceEvent<T>> = callbackFlow {
+): Flow<IBinder?> = callbackFlow {
     var currentBinder: IBinder? = null
     val deathRecipient = IBinder.DeathRecipient {
-        trySend(BindServiceEvent.Crashed)
+        trySend(null)
     }
 
     val connection = object : ServiceConnection {
@@ -149,18 +143,18 @@ inline fun <reified T : IBinder> Context.bindServiceFlow(
                     currentBinder = binder
                     @Suppress("UNCHECKED_CAST") val casted = binder as? T
                     if (casted != null) {
-                        trySend(BindServiceEvent.Connected(casted))
+                        trySend(casted)
                     } else {
                         GlobalState.log("Binder is not of type ${T::class.java}")
-                        trySend(BindServiceEvent.Disconnected)
+                        trySend(null)
                     }
                 } catch (e: RemoteException) {
                     GlobalState.log("Failed to link to death: ${e.message}")
                     binder.unlinkToDeath(deathRecipient, 0)
-                    trySend(BindServiceEvent.Disconnected)
+                    trySend(null)
                 }
             } else {
-                trySend(BindServiceEvent.Disconnected)
+                trySend(null)
             }
         }
 
@@ -168,15 +162,13 @@ inline fun <reified T : IBinder> Context.bindServiceFlow(
             GlobalState.log("Service disconnected")
             currentBinder?.unlinkToDeath(deathRecipient, 0)
             currentBinder = null
-            trySend(BindServiceEvent.Disconnected)
+            trySend(null)
         }
     }
 
     if (!bindService(intent, connection, flags)) {
         GlobalState.log("Failed to bind service")
-        trySend(BindServiceEvent.Disconnected)
-        close()
-        return@callbackFlow
+        trySend(null)
     }
 
     awaitClose {
