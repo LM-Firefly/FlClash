@@ -78,6 +78,7 @@ class AppController {
     await coreController.preload();
     await _initCore();
     _ref.read(coreStatusProvider.notifier).value = CoreStatus.connected;
+    _ref.read(initProvider.notifier).value = true;
     if (_ref.read(isStartProvider)) {
       await globalState.handleStart();
     }
