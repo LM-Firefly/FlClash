@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fl_clash/plugins/app.dart';
+import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/plugins/tile.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,8 @@ Future<void> main() async {
 Future<void> _service(List<String> flags) async {
   WidgetsFlutterBinding.ensureInitialized();
   await globalState.init();
+  await coreController.preload();
+  await service?.syncAndroidState(globalState.getAndroidState());
   tile?.addListener(
     _TileListenerWithService(
       onStop: () async {

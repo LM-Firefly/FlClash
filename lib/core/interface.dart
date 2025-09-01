@@ -9,7 +9,7 @@ import 'package:fl_clash/models/models.dart';
 mixin CoreInterface {
   Future<bool> init(InitParams params);
 
-  Future<bool> preload();
+  Future<String> preload();
 
   Future<bool> shutdown();
 

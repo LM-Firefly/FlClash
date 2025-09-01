@@ -29,7 +29,7 @@ class CoreController {
     return _instance!;
   }
 
-  Future<bool> preload() {
+  Future<String> preload() {
     return _interface.preload();
   }
 

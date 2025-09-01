@@ -149,10 +149,10 @@ class CoreService extends CoreHandlerInterface {
   }
 
   @override
-  Future<bool> preload() async {
+  Future<String> preload() async {
     await _serverCompleter.future;
     await start();
-    return true;
+    return '';
   }
 
   @override

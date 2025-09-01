@@ -76,16 +76,16 @@ class Service {
     return await methodChannel.invokeMethod<bool>('stop') ?? false;
   }
 
-  Future<bool> syncAndroidState(AndroidState state) async {
-    return await methodChannel.invokeMethod<bool>(
+  Future<String> syncAndroidState(AndroidState state) async {
+    return await methodChannel.invokeMethod<String>(
           'syncState',
           json.encode(state),
         ) ??
-        false;
+        '';
   }
 
-  Future<bool> init() async {
-    return await methodChannel.invokeMethod<bool>('init') ?? false;
+  Future<String> init() async {
+    return await methodChannel.invokeMethod<String>('init') ?? '';
   }
 
   Future<DateTime?> getRunTime() async {

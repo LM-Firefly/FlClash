@@ -107,57 +107,57 @@ class ApplicationState extends ConsumerState<Application> {
 
   @override
   Widget build(context) {
-    return _buildPlatformState(
-      _buildState(
-        Consumer(
-          builder: (_, ref, child) {
-            final locale = ref.watch(
-              appSettingProvider.select((state) => state.locale),
-            );
-            final themeProps = ref.watch(themeSettingProvider);
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              navigatorKey: globalState.navigatorKey,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-              ],
-              builder: (_, child) {
-                return AppEnvManager(
-                  child: _buildApp(
+    return Consumer(
+      builder: (_, ref, child) {
+        final locale = ref.watch(
+          appSettingProvider.select((state) => state.locale),
+        );
+        final themeProps = ref.watch(themeSettingProvider);
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          navigatorKey: globalState.navigatorKey,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          builder: (_, child) {
+            return AppEnvManager(
+              child: _buildApp(
+                _buildPlatformState(
+                  _buildState(
                     AppSidebarContainer(child: _buildPlatformApp(child!)),
                   ),
-                );
-              },
-              scrollBehavior: BaseScrollBehavior(),
-              title: appName,
-              locale: utils.getLocaleForString(locale),
-              supportedLocales: AppLocalizations.delegate.supportedLocales,
-              themeMode: themeProps.themeMode,
-              theme: ThemeData(
-                useMaterial3: true,
-                pageTransitionsTheme: _pageTransitionsTheme,
-                colorScheme: _getAppColorScheme(
-                  brightness: Brightness.light,
-                  primaryColor: themeProps.primaryColor,
                 ),
               ),
-              darkTheme: ThemeData(
-                useMaterial3: true,
-                pageTransitionsTheme: _pageTransitionsTheme,
-                colorScheme: _getAppColorScheme(
-                  brightness: Brightness.dark,
-                  primaryColor: themeProps.primaryColor,
-                ).toPureBlack(themeProps.pureBlack),
-              ),
-              home: child!,
             );
           },
-          child: const HomePage(),
-        ),
-      ),
+          scrollBehavior: BaseScrollBehavior(),
+          title: appName,
+          locale: utils.getLocaleForString(locale),
+          supportedLocales: AppLocalizations.delegate.supportedLocales,
+          themeMode: themeProps.themeMode,
+          theme: ThemeData(
+            useMaterial3: true,
+            pageTransitionsTheme: _pageTransitionsTheme,
+            colorScheme: _getAppColorScheme(
+              brightness: Brightness.light,
+              primaryColor: themeProps.primaryColor,
+            ),
+          ),
+          darkTheme: ThemeData(
+            useMaterial3: true,
+            pageTransitionsTheme: _pageTransitionsTheme,
+            colorScheme: _getAppColorScheme(
+              brightness: Brightness.dark,
+              primaryColor: themeProps.primaryColor,
+            ).toPureBlack(themeProps.pureBlack),
+          ),
+          home: child!,
+        );
+      },
+      child: const HomePage(),
     );
   }
 
