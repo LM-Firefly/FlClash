@@ -79,7 +79,6 @@ class GlobalState {
     );
     await _initDynamicColor();
     await init();
-    appState = appState.copyWith(coreStatus: CoreStatus.connected);
     await window?.init(version);
     _shakingStore();
   }
@@ -133,8 +132,6 @@ class GlobalState {
       utils.getLocaleForString(config.appSetting.locale) ??
           WidgetsBinding.instance.platformDispatcher.locale,
     );
-    await coreController.preload();
-    await service?.syncAndroidState(globalState.getAndroidState());
   }
 
   String get ua => config.patchClashConfig.globalUa ?? packageInfo.ua;

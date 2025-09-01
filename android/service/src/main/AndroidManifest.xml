@@ -5,7 +5,7 @@
 
     <application>
         <service
-            android:name="com.follow.clash.service.VpnService"
+            android:name=".VpnService"
             android:exported="false"
             android:foregroundServiceType="specialUse"
             android:permission="android.permission.BIND_VPN_SERVICE"
@@ -19,7 +19,7 @@
         </service>
 
         <service
-            android:name="com.follow.clash.service.CommonService"
+            android:name=".CommonService"
             android:exported="false"
             android:foregroundServiceType="specialUse"
             android:process=":background">
@@ -29,7 +29,8 @@
         </service>
 
         <service
-            android:name="com.follow.clash.service.RemoteService"
+            android:name=".RemoteService"
+            android:enabled="true"
             android:exported="false"
             android:process=":background" />
 

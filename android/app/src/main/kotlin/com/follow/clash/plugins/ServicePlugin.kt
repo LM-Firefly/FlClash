@@ -17,7 +17,6 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -105,9 +104,9 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
         }
     }
 
-    private fun onServiceDisconnected() {
+    private fun onServiceDisconnected(message: String) {
         State.runStateFlow.tryEmit(RunState.STOP)
-        flutterMethodChannel.invokeMethodOnMainThread<Any>("crash", null)
+        flutterMethodChannel.invokeMethodOnMainThread<Any>("crash", message)
     }
 
     private fun handleSyncState(call: MethodCall, result: MethodChannel.Result) {
@@ -120,21 +119,25 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
                     stopText = params.stopText,
                     onlyStatisticsProxy = params.onlyStatisticsProxy
                 )
-            )
-            result.success(true)
+            ).onSuccess {
+                result.success("")
+            }.onFailure {
+                result.success(it.message)
+            }
         }
     }
 
     fun handleInit(result: MethodChannel.Result) {
-        launch {
-            delay(1000)
-            Service.bind()
-        }
+        Service.bind()
         launch {
             Service.setMessageCallback {
                 handleSendEvent(it)
+            }.onSuccess {
+                result.success("")
+            }.onFailure {
+                result.success(it.message)
             }
-            result.success(true)
+
         }
         Service.onServiceDisconnected = ::onServiceDisconnected
     }

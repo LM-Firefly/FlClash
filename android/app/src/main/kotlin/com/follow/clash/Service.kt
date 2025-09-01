@@ -18,11 +18,11 @@ object Service {
         }
     }
 
-    var onServiceDisconnected: (() -> Unit)? = null
+    var onServiceDisconnected: ((String) -> Unit)? = null
 
-    private fun handleServiceDisconnected() {
+    private fun handleServiceDisconnected(message: String) {
         onServiceDisconnected?.let {
-            it()
+            it(message)
         }
     }
 
@@ -32,8 +32,8 @@ object Service {
 
     suspend fun invokeAction(
         data: String, cb: (result: ByteArray?, isSuccess: Boolean) -> Unit
-    ) {
-        delegate.useService {
+    ): Result<Unit> {
+        return delegate.useService {
             it.invokeAction(data, object : ICallbackInterface.Stub() {
                 override fun onResult(result: ByteArray?, isSuccess: Boolean) {
                     cb(result, isSuccess)
@@ -44,16 +44,16 @@ object Service {
 
     suspend fun updateNotificationParams(
         params: NotificationParams
-    ) {
-        delegate.useService {
+    ): Result<Unit> {
+        return delegate.useService {
             it.updateNotificationParams(params)
         }
     }
 
     suspend fun setMessageCallback(
         cb: (result: String?) -> Unit
-    ) {
-        delegate.useService {
+    ): Result<Unit> {
+        return delegate.useService {
             it.setMessageCallback(object : IMessageInterface.Stub() {
                 override fun onResult(result: String?) {
                     cb(result)

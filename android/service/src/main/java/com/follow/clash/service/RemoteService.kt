@@ -28,7 +28,7 @@ class RemoteService : Service(),
         }
     }
 
-    private fun handleServiceDisconnected() {
+    private fun handleServiceDisconnected(message: String) {
         intent = null
         delegate = null
     }
@@ -57,7 +57,7 @@ class RemoteService : Service(),
         }
     }
 
-    private val binder: IRemoteInterface.Stub = object : IRemoteInterface.Stub() {
+    private val binder = object : IRemoteInterface.Stub() {
         override fun invokeAction(data: String, callback: ICallbackInterface) {
             Core.invokeAction(data) {
                 val chunks = it?.chunkedForAidl() ?: listOf()

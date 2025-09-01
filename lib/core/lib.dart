@@ -15,10 +15,12 @@ class CoreLib extends CoreHandlerInterface {
   CoreLib._internal();
 
   @override
-  Future<bool> preload() async {
-    await service?.init();
-    _connectedCompleter.complete(true);
-    return true;
+  Future<String> preload() async {
+    final res = await service?.init();
+    if (res?.isEmpty == true) {
+      _connectedCompleter.complete(true);
+    }
+    return res ?? '';
   }
 
   factory CoreLib() {

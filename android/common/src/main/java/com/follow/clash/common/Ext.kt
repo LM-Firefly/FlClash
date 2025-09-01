@@ -43,13 +43,17 @@ fun Service.startForegroundCompat(id: Int, notification: Notification) {
     }
 }
 
+val ComponentName.intent: Intent
+    get() = Intent().apply {
+        setComponent(this@intent)
+        setPackage(GlobalState.packageName)
+    }
+
 val QuickAction.action: String
     get() = "${GlobalState.application.packageName}.action.${this.name}"
 
 val QuickAction.quickIntent: Intent
-    get() = Intent().apply {
-        setComponent(Components.TEMP_ACTIVITY)
-        setPackage(GlobalState.packageName)
+    get() = Components.TEMP_ACTIVITY.intent.apply {
         action = this@quickIntent.action
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
     }
@@ -58,9 +62,7 @@ val BroadcastAction.action: String
     get() = "${GlobalState.application.packageName}.intent.action.${this.name}"
 
 val BroadcastAction.quickIntent: Intent
-    get() = Intent().apply {
-        setComponent(Components.BROADCAST_RECEIVER)
-        setPackage(GlobalState.packageName)
+    get() = Components.BROADCAST_RECEIVER.intent.apply {
         action = this@quickIntent.action
     }
 
@@ -129,51 +131,45 @@ fun Context.receiveBroadcastFlow(
 inline fun <reified T : IBinder> Context.bindServiceFlow(
     intent: Intent,
     flags: Int = Context.BIND_AUTO_CREATE,
-): Flow<IBinder?> = callbackFlow {
-    var currentBinder: IBinder? = null
-    val deathRecipient = IBinder.DeathRecipient {
-        trySend(null)
-    }
+): Flow<Pair<IBinder?, String>> = callbackFlow {
+    var isBind = false
 
     val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
+            isBind = true
             if (binder != null) {
                 try {
-                    binder.linkToDeath(deathRecipient, 0)
-                    currentBinder = binder
                     @Suppress("UNCHECKED_CAST") val casted = binder as? T
                     if (casted != null) {
-                        trySend(casted)
+                        trySend(Pair(casted, "Service Crash"))
                     } else {
-                        GlobalState.log("Binder is not of type ${T::class.java}")
-                        trySend(null)
+                        trySend(Pair(null, "Binder is not of type ${T::class.java}"))
                     }
                 } catch (e: RemoteException) {
-                    GlobalState.log("Failed to link to death: ${e.message}")
-                    binder.unlinkToDeath(deathRecipient, 0)
-                    trySend(null)
+                    trySend(Pair(null, "Failed to link to death: ${e.message}"))
                 }
             } else {
-                trySend(null)
+                trySend(Pair(null, "Binder empty"))
             }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            GlobalState.log("Service disconnected")
-            currentBinder?.unlinkToDeath(deathRecipient, 0)
-            currentBinder = null
-            trySend(null)
+            trySend(Pair(null, "Service disconnected"))
         }
     }
 
-    if (!bindService(intent, connection, flags)) {
-        GlobalState.log("Failed to bind service")
-        trySend(null)
+    try {
+        if (!bindService(intent, connection, flags)) {
+            trySend(Pair(null, "Failed to bind service"))
+        }
+    } catch (e: Exception) {
+        trySend(Pair(null, "bindService exception: ${e.message}"))
     }
 
     awaitClose {
-        currentBinder?.unlinkToDeath(deathRecipient, 0)
-        unbindService(connection)
+        if (isBind) {
+            unbindService(connection)
+        }
     }
 }
 

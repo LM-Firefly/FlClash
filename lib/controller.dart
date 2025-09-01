@@ -8,6 +8,7 @@ import 'package:fl_clash/common/archive.dart';
 import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/plugins/app.dart';
+import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/dialog.dart';
@@ -77,6 +78,7 @@ class AppController {
     await coreController.preload();
     await _initCore();
     _ref.read(coreStatusProvider.notifier).value = CoreStatus.connected;
+    _ref.read(initProvider.notifier).value = true;
     if (_ref.read(isStartProvider)) {
       await globalState.handleStart();
     }
@@ -534,11 +536,9 @@ class AppController {
       }
     };
     updateTray(true);
-    await _initCore();
-    await _initStatus();
-    autoLaunch?.updateStatus(_ref.read(appSettingProvider).autoLaunch);
     autoUpdateProfiles();
     autoCheckUpdate();
+    autoLaunch?.updateStatus(_ref.read(appSettingProvider).autoLaunch);
     if (!_ref.read(appSettingProvider).silentLaunch) {
       window?.show();
     } else {
@@ -546,6 +546,18 @@ class AppController {
     }
     await _handlePreference();
     await _handlerDisclaimer();
+    final message = await coreController.preload();
+    if (message.isNotEmpty) {
+      _ref.read(coreStatusProvider.notifier).value = CoreStatus.disconnected;
+      if (context.mounted) {
+        context.showNotifier(message);
+      }
+      return;
+    }
+    _ref.read(coreStatusProvider.notifier).value = CoreStatus.connected;
+    await service?.syncAndroidState(globalState.getAndroidState());
+    await _initCore();
+    await _initStatus();
     _ref.read(initProvider.notifier).value = true;
   }
 
