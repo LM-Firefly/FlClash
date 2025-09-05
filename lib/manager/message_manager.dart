@@ -84,7 +84,7 @@ class MessageManagerState extends State<MessageManager> {
           builder: (_, messages, _) {
             return Container(
               margin: EdgeInsets.only(
-                top: kToolbarHeight + 12,
+                top: kToolbarHeight + 16,
                 left: 12,
                 right: 12,
               ),
