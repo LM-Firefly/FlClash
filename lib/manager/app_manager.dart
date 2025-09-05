@@ -181,7 +181,7 @@ class AppSidebarContainer extends ConsumerWidget {
       return child;
     }
     final currentIndex = navigationState.currentIndex;
-    final isExtend = ref.watch(appSettingProvider).showLabel;
+    final showLabel = ref.watch(appSettingProvider).showLabel;
     return Row(
       children: [
         _buildBackground(
@@ -230,10 +230,7 @@ class AppSidebarContainer extends ConsumerWidget {
                                   .map(
                                     (e) => NavigationRailDestination(
                                       icon: e.icon,
-                                      label: Padding(
-                                        padding: EdgeInsets.only(right: 12),
-                                        child: Text(Intl.message(e.label.name)),
-                                      ),
+                                      label: Text(Intl.message(e.label.name)),
                                     ),
                                   )
                                   .toList(),
@@ -242,11 +239,11 @@ class AppSidebarContainer extends ConsumerWidget {
                                   navigationItems[index].label,
                                 );
                               },
-                              extended: isExtend,
+                              extended: false,
                               selectedIndex: currentIndex,
-                              // labelType: showLabel
-                              //     ? NavigationRailLabelType.all
-                              //     : NavigationRailLabelType.none,
+                              labelType: showLabel
+                                  ? NavigationRailLabelType.all
+                                  : NavigationRailLabelType.none,
                             ),
                           ),
                         ],
