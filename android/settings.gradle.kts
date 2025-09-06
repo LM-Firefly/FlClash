@@ -22,7 +22,6 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.2.10" apply false
 }
 
-
 include(":app")
 include(":core")
 include(":service")
