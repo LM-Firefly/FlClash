@@ -164,7 +164,7 @@ func (result ActionResult) send() {
 	}
 	invokeResult(result.callback, string(data))
 	if result.Method != messageMethod {
-		defer releaseObject(result.callback)
+		releaseObject(result.callback)
 	}
 }
 

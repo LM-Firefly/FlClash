@@ -95,8 +95,8 @@ class _CoreContainerState extends ConsumerState<CoreManager>
   Future<void> onCrash(String message) async {
     if (!globalState.isUserDisconnected) {
       context.showNotifier(message);
-      globalState.isUserDisconnected = false;
     }
+    globalState.isUserDisconnected = false;
     if (ref.read(coreStatusProvider) != CoreStatus.connected) {
       return;
     }
