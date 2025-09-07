@@ -191,17 +191,12 @@ class AppSidebarContainer extends ConsumerWidget {
               alignment: Alignment.topRight,
               children: [
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     if (system.isMacOS) SizedBox(height: 22),
                     SizedBox(height: 10),
                     if (!system.isMacOS) ...[
-                      ClipRect(
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: AppIcon(),
-                        ),
-                      ),
+                      ClipRect(child: AppIcon()),
                       SizedBox(height: 12),
                     ],
                     Expanded(
@@ -252,21 +247,18 @@ class AppSidebarContainer extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Padding(
-                      padding: EdgeInsets.only(left: 20),
-                      child: IconButton(
-                        onPressed: () {
-                          ref
-                              .read(appSettingProvider.notifier)
-                              .updateState(
-                                (state) =>
-                                    state.copyWith(showLabel: !state.showLabel),
-                              );
-                        },
-                        icon: Icon(
-                          Icons.menu,
-                          color: context.colorScheme.onSurfaceVariant,
-                        ),
+                    IconButton(
+                      onPressed: () {
+                        ref
+                            .read(appSettingProvider.notifier)
+                            .updateState(
+                              (state) =>
+                                  state.copyWith(showLabel: !state.showLabel),
+                            );
+                      },
+                      icon: Icon(
+                        Icons.menu,
+                        color: context.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 16),
