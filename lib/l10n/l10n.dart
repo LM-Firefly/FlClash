@@ -3318,6 +3318,26 @@ class AppLocalizations {
   String get coreStatus {
     return Intl.message('Core status', name: 'coreStatus', desc: '', args: []);
   }
+
+  /// `Data Collection Notice`
+  String get dataCollectionTip {
+    return Intl.message(
+      'Data Collection Notice',
+      name: 'dataCollectionTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This app uses Firebase Crashlytics to collect crash information to improve app stability.\nThe collected data includes device information and crash details, but does not contain personal sensitive data.\nYou can disable this feature in settings.`
+  String get dataCollectionContent {
+    return Intl.message(
+      'This app uses Firebase Crashlytics to collect crash information to improve app stability.\nThe collected data includes device information and crash details, but does not contain personal sensitive data.\nYou can disable this feature in settings.',
+      name: 'dataCollectionContent',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -431,7 +431,7 @@ final class ContentWidthProvider
   }
 }
 
-String _$contentWidthHash() => r'9ac0dc2bcdc957160f59d6065cd7f846f41a95b1';
+String _$contentWidthHash() => r'4710fee8f91b08dc88520798fb6b1d4f61f090e6';
 
 @ProviderFor(dashboardState)
 const dashboardStateProvider = DashboardStateProvider._();

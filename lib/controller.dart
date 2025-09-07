@@ -543,6 +543,7 @@ class AppController {
     }
     await _handlePreference();
     await _handlerDisclaimer();
+    await _showCrashlyticsTip();
     await _connectCore();
     await service?.syncAndroidState(globalState.getAndroidState());
     await _initCore();
@@ -620,7 +621,6 @@ class AppController {
 
   Future<bool> showDisclaimer() async {
     return await globalState.showCommonDialog<bool>(
-          context: context,
           dismissible: false,
           child: CommonDialog(
             title: appLocalizations.disclaimer,
@@ -633,11 +633,6 @@ class AppController {
               ),
               TextButton(
                 onPressed: () {
-                  _ref
-                      .read(appSettingProvider.notifier)
-                      .updateState(
-                        (state) => state.copyWith(disclaimerAccepted: true),
-                      );
                   Navigator.of(context).pop<bool>(true);
                 },
                 child: Text(appLocalizations.agree),
@@ -649,14 +644,33 @@ class AppController {
         false;
   }
 
+  Future<void> _showCrashlyticsTip() async {
+    if (_ref.read(appSettingProvider.select((state) => state.crashlyticsTip))) {
+      return;
+    }
+    await globalState.showMessage(
+      title: appLocalizations.dataCollectionTip,
+      cancelable: false,
+      message: TextSpan(text: appLocalizations.dataCollectionContent),
+    );
+    _ref
+        .read(appSettingProvider.notifier)
+        .updateState((state) => state.copyWith(crashlyticsTip: true));
+  }
+
   Future<void> _handlerDisclaimer() async {
-    if (_ref.read(appSettingProvider).disclaimerAccepted) {
+    if (_ref.read(
+      appSettingProvider.select((state) => state.disclaimerAccepted),
+    )) {
       return;
     }
     final isDisclaimerAccepted = await showDisclaimer();
     if (!isDisclaimerAccepted) {
       await handleExit();
     }
+    _ref
+        .read(appSettingProvider.notifier)
+        .updateState((state) => state.copyWith(disclaimerAccepted: true));
     return;
   }
 
