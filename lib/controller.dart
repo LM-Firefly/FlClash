@@ -638,7 +638,7 @@ class AppController {
                 child: Text(appLocalizations.agree),
               ),
             ],
-            child: SelectableText(appLocalizations.disclaimerDesc),
+            child: Text(appLocalizations.disclaimerDesc),
           ),
         ) ??
         false;
