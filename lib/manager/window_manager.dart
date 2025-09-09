@@ -272,17 +272,13 @@ class AppIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: context.colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(12),
+        color: context.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(14),
       ),
-      padding: EdgeInsets.all(6),
-      child: SizedBox(
-        width: 28,
-        height: 28,
-        child: CircleAvatar(
-          foregroundImage: AssetImage('assets/images/icon.png'),
-          backgroundColor: Colors.transparent,
-        ),
+      padding: EdgeInsets.all(8),
+      child: Transform.translate(
+        offset: Offset(0, -1),
+        child: Image.asset('assets/images/icon.png', width: 34, height: 34),
       ),
     );
   }

@@ -188,9 +188,11 @@ class GlobalState {
     String? title,
     String? confirmText,
     bool cancelable = true,
+    bool? dismissible,
   }) async {
     return await showCommonDialog<bool>(
       context: context,
+      dismissible: dismissible,
       child: Builder(
         builder: (context) {
           return CommonDialog(
@@ -249,14 +251,14 @@ class GlobalState {
   Future<T?> showCommonDialog<T>({
     required Widget child,
     BuildContext? context,
-    bool dismissible = true,
+    bool? dismissible,
   }) async {
     return await showModal<T>(
       useRootNavigator: false,
       context: context ?? globalState.navigatorKey.currentContext!,
       configuration: FadeScaleTransitionConfiguration(
         barrierColor: Colors.black38,
-        barrierDismissible: dismissible,
+        barrierDismissible: dismissible ?? true,
       ),
       builder: (_) => child,
       filter: commonFilter,

@@ -429,5 +429,7 @@
   "restartCoreTip": "コアを再起動してもよろしいですか？",
   "forceRestartCoreTip": "コアを強制再起動してもよろしいですか？",
   "dnsHijacking": "DNSハイジャッキング",
-  "coreStatus": "コアステータス"
+  "coreStatus": "コアステータス",
+  "dataCollectionTip": "データ収集説明",
+  "dataCollectionContent": "本アプリはFirebase Crashlyticsを使用してクラッシュ情報を収集し、アプリの安定性を向上させます。\n収集されるデータにはデバイス情報とクラッシュ詳細が含まれますが、個人の機密データは含まれません。\n設定でこの機能を無効にすることができます。"
 }
