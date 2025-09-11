@@ -81,11 +81,27 @@ object Service {
         }
     }
 
+    suspend fun setCrashlytics(
+        enable: Boolean
+    ): Result<Unit> {
+        return delegate.useService {
+            it.setCrashlytics(enable)
+        }
+    }
+
     suspend fun startService(options: VpnOptions, inApp: Boolean) {
-        delegate.useService { it.startService(options, inApp) }
+        delegate.useService {
+            awaitIResultInterface { callback ->
+                it.startService(options, inApp, callback)
+            }
+        }
     }
 
     suspend fun stopService() {
-        delegate.useService { it.stopService() }
+        delegate.useService {
+            awaitIResultInterface { callback ->
+                it.stopService(callback)
+            }
+        }
     }
 }

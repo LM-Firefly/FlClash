@@ -90,12 +90,13 @@ class NotificationModule(private val service: Service) : Module() {
             setSmallIcon(R.drawable.ic)
             setContentTitle("FlClash")
             setContentIntent(intent.toPendingIntent)
+            setPriority(NotificationCompat.PRIORITY_HIGH)
             setCategory(NotificationCompat.CATEGORY_SERVICE)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 foregroundServiceBehavior = FOREGROUND_SERVICE_IMMEDIATE
             }
             setOngoing(true)
-            setShowWhen(false)
+            setShowWhen(true)
             setOnlyAlertOnce(true)
         }
     }
@@ -105,7 +106,6 @@ class NotificationModule(private val service: Service) : Module() {
             with(notificationBuilder) {
                 setContentTitle(params.title)
                 setContentText(params.contentText)
-                setPriority(NotificationCompat.PRIORITY_HIGH)
                 clearActions()
                 addAction(
                     0, params.stopText, QuickAction.STOP.quickIntent.toPendingIntent

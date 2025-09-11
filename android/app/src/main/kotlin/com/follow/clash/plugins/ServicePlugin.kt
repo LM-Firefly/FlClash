@@ -5,6 +5,7 @@ import com.follow.clash.Service
 import com.follow.clash.State
 import com.follow.clash.awaitResult
 import com.follow.clash.common.Components
+import com.follow.clash.common.GlobalState
 import com.follow.clash.invokeMethodOnMainThread
 import com.follow.clash.models.AppState
 import com.follow.clash.service.models.NotificationParams
@@ -114,20 +115,18 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
     }
 
     private fun handleSyncState(call: MethodCall, result: MethodChannel.Result) {
+        val data = call.arguments<String>()!!
+        val params = Gson().fromJson(data, AppState::class.java)
+        GlobalState.setCrashlytics(params.crashlytics)
         launch {
-            val data = call.arguments<String>()!!
-            val params = Gson().fromJson(data, AppState::class.java)
             Service.updateNotificationParams(
                 NotificationParams(
                     title = params.currentProfileName,
                     stopText = params.stopText,
                     onlyStatisticsProxy = params.onlyStatisticsProxy
                 )
-            ).onSuccess {
-                result.success("")
-            }.onFailure {
-                result.success(it.message)
-            }
+            )
+            Service.setCrashlytics(params.crashlytics)
         }
     }
 

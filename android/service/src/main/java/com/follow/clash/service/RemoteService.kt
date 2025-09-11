@@ -3,6 +3,7 @@ package com.follow.clash.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import com.follow.clash.common.GlobalState
 import com.follow.clash.common.ServiceDelegate
 import com.follow.clash.common.chunkedForAidl
 import com.follow.clash.common.intent
@@ -20,11 +21,12 @@ class RemoteService : Service(),
     private var delegate: ServiceDelegate<IBaseService>? = null
     private var intent: Intent? = null
 
-    private fun handleStopService() {
+    private fun handleStopService(result: IResultInterface) {
         launch {
             delegate?.useService { service ->
                 service.stop()
                 delegate?.unbind()
+                result.onResult()
             }
         }
     }
@@ -34,7 +36,7 @@ class RemoteService : Service(),
         delegate = null
     }
 
-    private fun handleStartService() {
+    private fun handleStartService(result: IResultInterface) {
         launch {
             val nextIntent = when (State.options?.enable == true) {
                 true -> VpnService::class.intent
@@ -54,6 +56,7 @@ class RemoteService : Service(),
             }
             delegate?.useService { service ->
                 service.start()
+                result.onResult()
             }
         }
     }
@@ -76,15 +79,15 @@ class RemoteService : Service(),
         }
 
         override fun startService(
-            options: VpnOptions, inApp: Boolean
+            options: VpnOptions, inApp: Boolean, result: IResultInterface
         ) {
             State.options = options
             State.inApp = inApp
-            handleStartService()
+            handleStartService(result)
         }
 
-        override fun stopService() {
-            handleStopService()
+        override fun stopService(result: IResultInterface) {
+            handleStopService(result)
         }
 
         override fun setEventListener(event: IEventInterface) {
@@ -98,6 +101,10 @@ class RemoteService : Service(),
                     }
                 }
             }
+        }
+
+        override fun setCrashlytics(enable: Boolean) {
+            GlobalState.setCrashlytics(enable)
         }
     }
 

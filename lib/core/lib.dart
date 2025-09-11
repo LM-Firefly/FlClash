@@ -4,6 +4,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/core.dart';
 import 'package:fl_clash/plugins/service.dart';
+import 'package:fl_clash/state.dart';
 
 import 'interface.dart';
 
@@ -17,6 +18,7 @@ class CoreLib extends CoreHandlerInterface {
   @override
   Future<String> preload() async {
     final res = await service?.init();
+    await service?.syncAndroidState(globalState.getAndroidState());
     if (res?.isEmpty == true) {
       _connectedCompleter.complete(true);
     }

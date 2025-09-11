@@ -629,10 +629,14 @@ AndroidState androidState(Ref ref) {
     appSettingProvider.select((state) => state.onlyStatisticsProxy),
   );
   ref.watch((appSettingProvider).select((state) => state.locale));
+  final crashlytics = ref.watch(
+    (appSettingProvider).select((state) => state.crashlytics),
+  );
   return AndroidState(
     currentProfileName: currentProfileName,
     onlyStatisticsProxy: onlyStatisticsProxy,
     stopText: appLocalizations.stop,
+    crashlytics: crashlytics,
   );
 }
 

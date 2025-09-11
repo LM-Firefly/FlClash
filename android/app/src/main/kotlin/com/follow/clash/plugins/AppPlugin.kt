@@ -57,7 +57,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
     private var vpnPrepareCallback: (suspend () -> Unit)? = null
 
     private var requestNotificationCallback: (() -> Unit)? = null
-    
+
     private val packages = mutableListOf<Package>()
 
     private val skipPrefixList = listOf(

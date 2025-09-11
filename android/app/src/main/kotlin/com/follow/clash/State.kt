@@ -26,6 +26,7 @@ object State {
     var runTime: Long = 0
 
     val runStateFlow: MutableStateFlow<RunState> = MutableStateFlow(RunState.STOP)
+
     var flutterEngine: FlutterEngine? = null
     var serviceFlutterEngine: FlutterEngine? = null
 
@@ -119,8 +120,8 @@ object State {
                     return@launch
                 }
                 appPlugin?.prepare(options.enable) {
-                    runTime = System.currentTimeMillis()
                     Service.startService(options, true)
+                    runTime = System.currentTimeMillis()
                     runStateFlow.tryEmit(RunState.START)
                 }
             }
