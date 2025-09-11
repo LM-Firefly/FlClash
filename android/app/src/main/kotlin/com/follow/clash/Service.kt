@@ -6,9 +6,13 @@ import com.follow.clash.common.intent
 import com.follow.clash.service.ICallbackInterface
 import com.follow.clash.service.IEventInterface
 import com.follow.clash.service.IRemoteInterface
+import com.follow.clash.service.IResultInterface
 import com.follow.clash.service.RemoteService
 import com.follow.clash.service.models.NotificationParams
 import com.follow.clash.service.models.VpnOptions
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 object Service {
     private val delegate by lazy {
@@ -39,8 +43,7 @@ object Service {
         val res = mutableListOf<ByteArray>()
         return delegate.useService {
             it.invokeAction(
-                data,
-                object : ICallbackInterface.Stub() {
+                data, object : ICallbackInterface.Stub() {
                     override fun onResult(result: ByteArray?, isSuccess: Boolean) {
                         res.add(result ?: byteArrayOf())
                         if (isSuccess) {
@@ -88,6 +91,27 @@ object Service {
             it.setCrashlytics(enable)
         }
     }
+
+    private suspend fun awaitIResultInterface(
+        block: (IResultInterface) -> Unit
+    ): Unit = suspendCancellableCoroutine { continuation ->
+        val callback = object : IResultInterface.Stub() {
+            override fun onResult() {
+                if (continuation.isActive) {
+                    continuation.resume(Unit)
+                }
+            }
+        }
+
+        try {
+            block(callback)
+        } catch (e: Exception) {
+            if (continuation.isActive) {
+                continuation.resumeWithException(e)
+            }
+        }
+    }
+
 
     suspend fun startService(options: VpnOptions, inApp: Boolean) {
         delegate.useService {

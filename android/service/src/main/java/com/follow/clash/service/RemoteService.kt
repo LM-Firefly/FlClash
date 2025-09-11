@@ -26,8 +26,8 @@ class RemoteService : Service(),
             delegate?.useService { service ->
                 service.stop()
                 delegate?.unbind()
-                result.onResult()
             }
+            result.onResult()
         }
     }
 
@@ -56,8 +56,8 @@ class RemoteService : Service(),
             }
             delegate?.useService { service ->
                 service.start()
-                result.onResult()
             }
+            result.onResult()
         }
     }
 

@@ -127,6 +127,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
                 )
             )
             Service.setCrashlytics(params.crashlytics)
+            result.success("")
         }
     }
 

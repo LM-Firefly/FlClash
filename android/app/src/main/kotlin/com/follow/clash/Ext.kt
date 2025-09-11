@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.core.graphics.drawable.toBitmap
 import com.follow.clash.common.GlobalState
-import com.follow.clash.service.IResultInterface
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodChannel
@@ -19,7 +18,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 private const val ICON_TTL_DAYS = 1L
 
@@ -97,26 +95,6 @@ suspend fun <T> MethodChannel.awaitResult(
 
 inline fun <reified T : FlutterPlugin> FlutterEngine.plugin(): T? {
     return plugins.get(T::class.java) as T?
-}
-
-suspend fun awaitIResultInterface(
-    block: (IResultInterface) -> Unit
-): Unit = suspendCancellableCoroutine { cont ->
-    val callback = object : IResultInterface.Stub() {
-        override fun onResult() {
-            if (cont.isActive) {
-                cont.resume(Unit) {}
-            }
-        }
-    }
-
-    try {
-        block(callback)
-    } catch (e: Exception) {
-        if (cont.isActive) {
-            cont.resumeWithException(e)
-        }
-    }
 }
 
 fun <T> MethodChannel.invokeMethodOnMainThread(
