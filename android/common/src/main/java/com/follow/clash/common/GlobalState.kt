@@ -3,8 +3,7 @@ package com.follow.clash.common
 
 import android.app.Application
 import android.util.Log
-import com.google.firebase.FirebaseApp
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+// Firebase removed: replaced with local no-op implementation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -36,10 +35,9 @@ object GlobalState : CoroutineScope by CoroutineScope(Dispatchers.Default) {
     }
 
     fun setCrashlytics(enable: Boolean) {
+        // No-op: Crashlytics removed from project. Keep API for settings compatibility.
         _application?.let {
-            FirebaseApp.initializeApp(it)
-            FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = enable
-            log("init crashlytics ${it.processName}")
+            log("crashlytics set to $enable")
         }
     }
 }
