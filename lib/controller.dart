@@ -490,7 +490,10 @@ class AppController {
       if (res != true) {
         return;
       }
-      launchUrl(Uri.parse('https://github.com/$repository/releases/latest'));
+      launchUrl(
+        Uri.parse('https://github.com/$repository/releases/latest'),
+        mode: LaunchMode.externalApplication,
+      );
     } else if (handleError) {
       globalState.showMessage(
         title: appLocalizations.checkUpdate,
