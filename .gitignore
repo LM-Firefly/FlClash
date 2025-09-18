@@ -4,6 +4,7 @@
 *.pyc
 *.swp
 .DS_Store
+.vscode
 .atom/
 .build/
 .buildlog/
@@ -60,4 +61,3 @@ app.*.map.json
 /services/helper/target
 /macos/**/Package.resolved
 devtools_options.yaml
-
