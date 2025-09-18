@@ -44,7 +44,10 @@ class ServiceDelegate<T>(
             job = null
             _serviceState.value = null
             job = launch {
-                GlobalState.application.bindServiceFlow<IBinder>(intent).collect { handleBind(it) }
+                runCatching {
+                    GlobalState.application.bindServiceFlow<IBinder>(intent)
+                        .collect { handleBind(it) }
+                }
             }
         }
     }
