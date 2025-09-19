@@ -73,13 +73,13 @@ class Request {
   }
 
   final Map<String, IpInfo Function(Map<String, dynamic>)> _ipInfoSources = {
-    'https://ipwho.is/': IpInfo.fromIpWhoIsJson,
-    'https://api.myip.com/': IpInfo.fromMyIpJson,
-    'https://ipapi.co/json/': IpInfo.fromIpApiCoJson,
-    'https://ident.me/json/': IpInfo.fromIdentMeJson,
-    'http://ip-api.com/json/': IpInfo.fromIpAPIJson,
-    'https://api.ip.sb/geoip/': IpInfo.fromIpSbJson,
-    'https://ipinfo.io/json/': IpInfo.fromIpInfoIoJson,
+    'https://ipwho.is': IpInfo.fromIpWhoIsJson,
+    'https://api.myip.com': IpInfo.fromMyIpJson,
+    'https://ipapi.co/json': IpInfo.fromIpApiCoJson,
+    'https://ident.me/json': IpInfo.fromIdentMeJson,
+    'http://ip-api.com/json': IpInfo.fromIpAPIJson,
+    'https://api.ip.sb/geoip': IpInfo.fromIpSbJson,
+    'https://ipinfo.io/json': IpInfo.fromIpInfoIoJson,
   };
 
   Future<Result<IpInfo?>> checkIp({CancelToken? cancelToken}) async {
