@@ -353,7 +353,7 @@ class AppController {
       try {
         await updateProfile(profile);
       } catch (e) {
-        commonPrint.log(e.toString());
+        commonPrint.log(e.toString(), logLevel: LogLevel.warning);
       }
     }
   }
@@ -529,6 +529,7 @@ class AppController {
     FlutterError.onError = (details) {
       commonPrint.log(
         'exception: ${details.exception} stack: ${details.stack}',
+        logLevel: LogLevel.warning,
       );
     };
     updateTray(true);
@@ -956,7 +957,7 @@ class AppController {
       final res = await futureFunction();
       return res;
     } catch (e) {
-      commonPrint.log('$futureFunction ===> $e');
+      commonPrint.log('$futureFunction ===> $e', logLevel: LogLevel.warning);
       if (realSilence) {
         globalState.showNotifier(e.toString());
       } else {

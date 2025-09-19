@@ -52,7 +52,7 @@ class CoreService extends CoreHandlerInterface {
         }
       },
       (error, stack) async {
-        commonPrint.log('Service error: $error');
+        commonPrint.log('Service error: $error', logLevel: LogLevel.warning);
       },
     );
   }
@@ -97,7 +97,7 @@ class CoreService extends CoreHandlerInterface {
     _process?.stderr.listen((e) {
       final error = utf8.decode(e);
       if (error.isNotEmpty) {
-        commonPrint.log(error);
+        commonPrint.log(error, logLevel: LogLevel.warning);
       }
     });
     await _socketCompleter.future;

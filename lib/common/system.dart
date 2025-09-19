@@ -181,7 +181,10 @@ class Windows {
     calloc.free(argumentsPtr);
     calloc.free(operationPtr);
 
-    commonPrint.log('windows runas: $command $arguments resultCode:$result');
+    commonPrint.log(
+      'windows runas: $command $arguments resultCode:$result',
+      logLevel: LogLevel.warning,
+    );
 
     if (result < 42) {
       return false;
