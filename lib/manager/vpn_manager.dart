@@ -24,11 +24,16 @@ class _VpnContainerState extends ConsumerState<VpnManager> {
   }
 
   void showTip() {
-    debouncer.call(FunctionTag.vpnTip, () {
-      if (ref.read(isStartProvider)) {
-        globalState.showNotifier(appLocalizations.vpnTip);
-      }
-    }, duration: const Duration(seconds: 6));
+    debouncer.call(
+      FunctionTag.vpnTip,
+      () {
+        if (ref.read(isStartProvider)) {
+          globalState.showNotifier(appLocalizations.vpnTip);
+        }
+      },
+      duration: const Duration(seconds: 6),
+      fire: true,
+    );
   }
 
   @override

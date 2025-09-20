@@ -10,15 +10,19 @@ class Debouncer {
     Function func, {
     List<dynamic>? args,
     Duration? duration,
+    bool fire = false,
   }) {
     final timer = _operations[tag];
-    if (timer != null) {
-      timer.cancel();
+    timer?.cancel();
+    if (timer == null && fire) {
+      Function.apply(func, args);
     }
     _operations[tag] = Timer(duration ?? const Duration(milliseconds: 600), () {
+      if (!fire) {
+        Function.apply(func, args);
+      }
       _operations[tag]?.cancel();
       _operations.remove(tag);
-      Function.apply(func, args);
     });
   }
 

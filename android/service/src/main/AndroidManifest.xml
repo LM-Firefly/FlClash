@@ -25,7 +25,7 @@
             android:process=":remote">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="service" />
+                android:value="proxy" />
         </service>
 
         <service
