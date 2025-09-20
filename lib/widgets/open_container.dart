@@ -515,9 +515,7 @@ class _OpenContainerRoute<T> extends ModalRoute<T> {
                         ),
                         // Open child fading in.
                         OverflowBox(
-                          minWidth: 0.0,
                           maxWidth: _rectTween.end!.width,
-                          minHeight: 0.0,
                           maxHeight: _rectTween.end!.height,
                           alignment: Alignment.topLeft,
                           child: FadeTransition(
