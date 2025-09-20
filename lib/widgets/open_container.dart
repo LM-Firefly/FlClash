@@ -522,20 +522,11 @@ class _OpenContainerRoute<T> extends ModalRoute<T> {
                           alignment: Alignment.topLeft,
                           child: FadeTransition(
                             opacity: openOpacityTween!.animate(animation),
-                            child: RepaintBoundary(
-                              child: OverflowBox(
-                                minWidth: 0.0,
-                                maxWidth: _rectTween.end!.width,
-                                minHeight: 0.0,
-                                maxHeight: _rectTween.end!.height,
-                                alignment: Alignment.topLeft,
-                                child: Builder(
-                                  key: _openBuilderKey,
-                                  builder: (BuildContext context) {
-                                    return openBuilder(context, closeContainer);
-                                  },
-                                ),
-                              ),
+                            child: Builder(
+                              key: _openBuilderKey,
+                              builder: (BuildContext context) {
+                                return openBuilder(context, closeContainer);
+                              },
                             ),
                           ),
                         ),
