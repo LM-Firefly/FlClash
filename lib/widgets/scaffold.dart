@@ -180,7 +180,6 @@ class CommonScaffoldState extends State<CommonScaffold> {
               if (!mounted) {
                 return;
               }
-              print("handelback===>");
               backAction();
             },
           )

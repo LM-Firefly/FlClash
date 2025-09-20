@@ -14,7 +14,7 @@ class StartButton extends ConsumerStatefulWidget {
 
 class _StartButtonState extends ConsumerState<StartButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  AnimationController? _controller;
   late Animation<double> _animation;
   bool isStart = false;
 
@@ -28,7 +28,7 @@ class _StartButtonState extends ConsumerState<StartButton>
       duration: const Duration(milliseconds: 200),
     );
     _animation = CurvedAnimation(
-      parent: _controller,
+      parent: _controller!,
       curve: Curves.easeOutBack,
     );
     ref.listenManual(runTimeProvider.select((state) => state != null), (
@@ -44,7 +44,8 @@ class _StartButtonState extends ConsumerState<StartButton>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
+    _controller = null;
     super.dispose();
   }
 
@@ -59,9 +60,9 @@ class _StartButtonState extends ConsumerState<StartButton>
   void updateController() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (isStart && mounted) {
-        _controller.forward();
+        _controller?.forward();
       } else {
-        _controller.reverse();
+        _controller?.reverse();
       }
     });
   }
@@ -80,7 +81,7 @@ class _StartButtonState extends ConsumerState<StartButton>
             ),
       ),
       child: AnimatedBuilder(
-        animation: _controller.view,
+        animation: _controller!.view,
         builder: (_, child) {
           final textWidth =
               globalState.measure
