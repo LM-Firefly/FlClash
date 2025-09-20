@@ -514,19 +514,27 @@ class _OpenContainerRoute<T> extends ModalRoute<T> {
                           ),
                         ),
                         // Open child fading in.
-                        FittedBox(
-                          fit: BoxFit.fitWidth,
+                        OverflowBox(
+                          minWidth: 0.0,
+                          maxWidth: _rectTween.end!.width,
+                          minHeight: 0.0,
+                          maxHeight: _rectTween.end!.height,
                           alignment: Alignment.topLeft,
-                          child: SizedBox(
-                            width: _rectTween.end!.width,
-                            height: _rectTween.end!.height,
-                            child: FadeTransition(
-                              opacity: openOpacityTween!.animate(animation),
-                              child: Builder(
-                                key: _openBuilderKey,
-                                builder: (BuildContext context) {
-                                  return openBuilder(context, closeContainer);
-                                },
+                          child: FadeTransition(
+                            opacity: openOpacityTween!.animate(animation),
+                            child: RepaintBoundary(
+                              child: OverflowBox(
+                                minWidth: 0.0,
+                                maxWidth: _rectTween.end!.width,
+                                minHeight: 0.0,
+                                maxHeight: _rectTween.end!.height,
+                                alignment: Alignment.topLeft,
+                                child: Builder(
+                                  key: _openBuilderKey,
+                                  builder: (BuildContext context) {
+                                    return openBuilder(context, closeContainer);
+                                  },
+                                ),
                               ),
                             ),
                           ),
