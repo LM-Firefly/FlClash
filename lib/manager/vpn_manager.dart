@@ -28,7 +28,7 @@ class _VpnContainerState extends ConsumerState<VpnManager> {
       if (ref.read(isStartProvider)) {
         globalState.showNotifier(appLocalizations.vpnTip);
       }
-    });
+    }, duration: const Duration(seconds: 6));
   }
 
   @override
