@@ -18,7 +18,6 @@ class CommonScaffold extends StatefulWidget {
   final Widget body;
   final Color? backgroundColor;
   final String? title;
-  final Widget? leading;
   final List<Widget>? actions;
   final bool? centerTitle;
   final Widget? floatingActionButton;
@@ -31,7 +30,6 @@ class CommonScaffold extends StatefulWidget {
     this.appBar,
     required this.body,
     this.backgroundColor,
-    this.leading,
     this.title,
     this.actions,
     this.centerTitle,
@@ -163,7 +161,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     _keywordsNotifier.value = keywords;
   }
 
-  Widget? _buildLeading() {
+  Widget? _buildLeading(VoidCallback? backAction) {
     if (_isEdit) {
       return IconButton(
         onPressed: _appBarState.value.editState?.onExit,
@@ -176,7 +174,17 @@ class CommonScaffoldState extends State<CommonScaffold> {
         icon: Icon(Icons.arrow_back),
       );
     }
-    return widget.leading;
+    return backAction != null
+        ? BackButton(
+            onPressed: () {
+              if (!mounted) {
+                return;
+              }
+              print("handelback===>");
+              backAction();
+            },
+          )
+        : null;
   }
 
   Widget _buildTitle(AppBarSearchState? startState) {
@@ -251,7 +259,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(VoidCallback? backAction) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Stack(
@@ -263,8 +271,11 @@ class CommonScaffoldState extends State<CommonScaffold> {
                 builder: (_, state, _) {
                   return _buildAppBarWrap(
                     AppBar(
+                      automaticallyImplyLeading: backAction != null
+                          ? false
+                          : true,
                       centerTitle: widget.centerTitle ?? false,
-                      leading: _buildLeading(),
+                      leading: _buildLeading(backAction),
                       title: _buildTitle(state.searchState),
                       actions: _buildActions(
                         state.searchState != null,
@@ -285,6 +296,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
   @override
   Widget build(BuildContext context) {
     assert(widget.appBar != null || widget.title != null);
+    final backActionProvider = CommonScaffoldBackActionProvider.of(context);
     final body = SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,7 +339,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
       ),
     );
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(backActionProvider?.backAction),
       body: body,
       resizeToAvoidBottomInset: true,
       backgroundColor: widget.backgroundColor,
@@ -348,4 +360,24 @@ List<Widget> genActions(List<Widget> actions, {double? space}) {
     ...actions.separated(SizedBox(width: space ?? 4)),
     SizedBox(width: 8),
   ];
+}
+
+class CommonScaffoldBackActionProvider extends InheritedWidget {
+  final VoidCallback? backAction;
+
+  const CommonScaffoldBackActionProvider({
+    super.key,
+    required this.backAction,
+    required super.child,
+  });
+
+  static CommonScaffoldBackActionProvider? of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<CommonScaffoldBackActionProvider>();
+  }
+
+  @override
+  bool updateShouldNotify(CommonScaffoldBackActionProvider oldWidget) {
+    return false;
+  }
 }

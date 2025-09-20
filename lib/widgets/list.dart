@@ -282,7 +282,7 @@ class ListItem<T> extends StatelessWidget {
         closedBuilder: (_, action) {
           openAction() {
             final isMobile = globalState.appState.viewMode == ViewMode.mobile;
-            if (!isMobile || system.isDesktop) {
+            if (!isMobile) {
               showExtend(
                 context,
                 props: ExtendProps(
