@@ -24,7 +24,7 @@ class _VpnContainerState extends ConsumerState<VpnManager> {
   }
 
   void showTip() {
-    debouncer.call(
+    throttler.call(
       FunctionTag.vpnTip,
       () {
         if (ref.read(isStartProvider)) {

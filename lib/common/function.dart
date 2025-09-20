@@ -10,19 +10,15 @@ class Debouncer {
     Function func, {
     List<dynamic>? args,
     Duration? duration,
-    bool fire = false,
   }) {
     final timer = _operations[tag];
-    timer?.cancel();
-    if (timer == null && fire) {
-      Function.apply(func, args);
+    if (timer != null) {
+      timer.cancel();
     }
     _operations[tag] = Timer(duration ?? const Duration(milliseconds: 600), () {
-      if (!fire) {
-        Function.apply(func, args);
-      }
       _operations[tag]?.cancel();
       _operations.remove(tag);
+      Function.apply(func, args);
     });
   }
 
@@ -40,16 +36,25 @@ class Throttler {
     Function func, {
     List<dynamic>? args,
     Duration duration = const Duration(milliseconds: 600),
+    bool fire = false,
   }) {
     final timer = _operations[tag];
     if (timer != null) {
       return true;
     }
-    _operations[tag] = Timer(duration, () {
-      _operations[tag]?.cancel();
-      _operations.remove(tag);
+    if (fire) {
       Function.apply(func, args);
-    });
+      _operations[tag] = Timer(duration, () {
+        _operations[tag]?.cancel();
+        _operations.remove(tag);
+      });
+    } else {
+      _operations[tag] = Timer(duration, () {
+        Function.apply(func, args);
+        _operations[tag]?.cancel();
+        _operations.remove(tag);
+      });
+    }
     return false;
   }
 
