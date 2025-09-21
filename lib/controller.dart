@@ -554,7 +554,7 @@ class AppController {
     _ref.read(coreStatusProvider.notifier).value = CoreStatus.connecting;
     final result = await Future.wait([
       coreController.preload(),
-      Future.delayed(Duration(milliseconds: 300)),
+      if (!globalState.isService) Future.delayed(Duration(milliseconds: 300)),
     ]);
     final String message = result[0];
     await Future.delayed(commonDuration);

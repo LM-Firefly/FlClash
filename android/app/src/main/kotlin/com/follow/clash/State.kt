@@ -103,6 +103,9 @@ object State {
 
     suspend fun startServiceWithEngine() {
         runLock.withLock {
+            if (serviceFlutterEngine != null || runStateFlow.value == RunState.PENDING || runStateFlow.value == RunState.START) {
+                return
+            }
             withContext(Dispatchers.Main) {
                 serviceFlutterEngine = FlutterEngine(GlobalState.application)
                 serviceFlutterEngine?.plugins?.add(ServicePlugin())
