@@ -552,7 +552,12 @@ class AppController {
 
   Future<void> _connectCore() async {
     _ref.read(coreStatusProvider.notifier).value = CoreStatus.connecting;
-    final message = await coreController.preload();
+    final result = await Future.wait([
+      coreController.preload(),
+      Future.delayed(Duration(milliseconds: 300)),
+    ]);
+    final String message = result[0];
+    await Future.delayed(commonDuration);
     if (message.isNotEmpty) {
       _ref.read(coreStatusProvider.notifier).value = CoreStatus.disconnected;
       if (context.mounted) {
