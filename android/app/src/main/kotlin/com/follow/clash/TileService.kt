@@ -5,7 +5,6 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.follow.clash.common.Components
-import com.follow.clash.common.GlobalState
 import com.follow.clash.common.intent
 import com.follow.clash.common.toPendingIntent
 import kotlinx.coroutines.CoroutineScope
@@ -53,7 +52,7 @@ class TileService : TileService() {
     override fun onClick() {
         super.onClick()
         activityTransfer()
-        GlobalState.launch {
+        scope?.launch {
             State.handleToggleAction()
         }
     }
