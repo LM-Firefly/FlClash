@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.follow.clash.common.Components
-import com.follow.clash.common.intent
+import com.follow.clash.common.QuickAction
+import com.follow.clash.common.quickIntent
 import com.follow.clash.common.toPendingIntent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,8 +39,8 @@ class TileService : TileService() {
     }
 
     @SuppressLint("StartActivityAndCollapseDeprecated")
-    private fun activityTransfer() {
-        val intent = Components.TEMP_ACTIVITY.intent
+    private fun handleToggle() {
+        val intent = QuickAction.TOGGLE.quickIntent
         val pendingIntent = intent.toPendingIntent
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startActivityAndCollapse(pendingIntent)
@@ -50,11 +50,8 @@ class TileService : TileService() {
     }
 
     override fun onClick() {
+        handleToggle()
         super.onClick()
-        activityTransfer()
-        scope?.launch {
-            State.handleToggleAction()
-        }
     }
 
     override fun onStopListening() {
