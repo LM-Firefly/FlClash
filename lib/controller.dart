@@ -466,9 +466,6 @@ class AppController {
     Map<String, dynamic>? data,
     bool handleError = false,
   }) async {
-    if (globalState.isPre) {
-      return;
-    }
     if (data != null) {
       final tagName = data['tag_name'];
       final body = data['body'];
