@@ -39,9 +39,8 @@ Future<void> _service(List<String> flags) async {
   final clashConfig = globalState.config.patchClashConfig.copyWith.tun(
     enable: false,
   );
-  coreController.setupConfig(clashConfig).then((_) async {
-    await globalState.handleStart();
-  });
+  coreController.setupConfig(clashConfig);
+  globalState.handleStart();
 }
 
 @immutable
