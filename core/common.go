@@ -16,12 +16,13 @@ import (
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/adapter/provider"
 	"github.com/metacubex/mihomo/common/batch"
+	"github.com/metacubex/mihomo/common/yaml"
 	"github.com/metacubex/mihomo/component/dialer"
+	"github.com/metacubex/mihomo/component/profile/cachefile"
 	"github.com/metacubex/mihomo/component/resolver"
 	"github.com/metacubex/mihomo/component/updater"
 	"github.com/metacubex/mihomo/config"
 	"github.com/metacubex/mihomo/constant"
-	"github.com/metacubex/mihomo/constant/features"
 	cp "github.com/metacubex/mihomo/constant/provider"
 	"github.com/metacubex/mihomo/hub"
 	"github.com/metacubex/mihomo/hub/executor"
@@ -33,12 +34,15 @@ import (
 )
 
 var (
-	currentConfig *config.Config
-	version       = 0
-	isRunning     = false
-	runLock       sync.Mutex
-	mBatch, _     = batch.New[bool](context.Background(), batch.WithConcurrencyNum[bool](50))
-	debugError    = false
+	currentConfig  *config.Config
+	version        = 0
+	isRunning      = false
+	isAndroid      = runtime.GOOS == "android"
+	defaultTestURL = "https://www.gstatic.com/generate_204"
+	groupOrder     []string // proxy group names in config definition order
+	runLock        sync.Mutex
+	mBatch, _      = batch.New[bool](context.Background(), batch.WithConcurrencyNum[bool](50))
+	debugError     = false
 )
 
 func getExternalProvidersRaw() map[string]cp.Provider {
@@ -67,7 +71,7 @@ func toExternalProvider(p cp.Provider) (*ExternalProvider, error) {
 			Count:            psp.Count(),
 			UpdateAt:         psp.UpdatedAt(),
 			Path:             psp.Vehicle().Path(),
-			SubscriptionInfo: psp.GetSubscriptionInfo(),
+			SubscriptionInfo: provider.NewSubscriptionInfo(cachefile.Cache().GetSubscriptionInfo(psp.Name())),
 		}, nil
 	case *rp.RuleSetProvider:
 		rsp := p.(*rp.RuleSetProvider)
@@ -132,17 +136,17 @@ func updateListeners() {
 	listener.ReCreateShadowSocks(general.ShadowSocksConfig, tunnel.Tunnel)
 	listener.ReCreateVmess(general.VmessConfig, tunnel.Tunnel)
 	listener.ReCreateTuic(general.TuicServer, tunnel.Tunnel)
-	if !features.Android {
+	if !isAndroid {
 		listener.ReCreateTun(general.Tun, tunnel.Tunnel)
 	}
 }
 
 func stopListeners() {
-	listener.StopListener()
+	listener.Cleanup()
 }
 
 func patchSelectGroup(mapping map[string]string) {
-	for name, proxy := range tunnel.AllProxies() {
+	for name, proxy := range tunnel.Proxies() {
 		outbound, ok := proxy.(*adapter.Proxy)
 		if !ok {
 			continue
@@ -255,7 +259,7 @@ func updateConfig(params *UpdateParams) {
 
 	updateListeners()
 	if updater.GeoAutoUpdate() {
-		updater.RegisterGeoUpdaterWithCancel()
+		updater.RegisterGeoUpdater()
 	}
 }
 
@@ -264,18 +268,41 @@ func applyConfig(params *SetupParams) error {
 	runLock.Lock()
 	defer runLock.Unlock()
 	var err error
-	constant.DefaultTestURL = params.TestURL
+	defaultTestURL = params.TestURL
 	currentConfig, err = executor.ParseWithPath(filepath.Join(constant.Path.HomeDir(), "config.yaml"))
 	if err != nil {
 		currentConfig, _ = config.ParseRawConfig(config.DefaultRawConfig())
 	}
+	// Extract proxy-group names in config definition order
+	groupOrder = extractGroupOrder()
 	hub.ApplyConfig(currentConfig)
 	patchSelectGroup(params.SelectedMap)
 	updateListeners()
 	if updater.GeoAutoUpdate() {
-		updater.RegisterGeoUpdaterWithCancel()
+		updater.RegisterGeoUpdater()
 	}
 	return err
+}
+
+func extractGroupOrder() []string {
+	configPath := filepath.Join(constant.Path.HomeDir(), "config.yaml")
+	buf, err := os.ReadFile(configPath)
+	if err != nil {
+		return nil
+	}
+	var raw struct {
+		ProxyGroup []map[string]any `yaml:"proxy-groups"`
+	}
+	if err := yaml.Unmarshal(buf, &raw); err != nil {
+		return nil
+	}
+	names := make([]string, 0, len(raw.ProxyGroup))
+	for _, g := range raw.ProxyGroup {
+		if name, ok := g["name"].(string); ok {
+			names = append(names, name)
+		}
+	}
+	return names
 }
 
 func UnmarshalJson(data []byte, v any) error {

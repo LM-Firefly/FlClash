@@ -11,7 +11,7 @@ buildscript {
 
     dependencies {
         // The Android Gradle Plugin knows how to build native code with the NDK.
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath 'com.android.tools.build:gradle:9.3.0'
     }
 }
 
@@ -29,12 +29,12 @@ android {
         namespace 'com.flutter_rust_bridge.rust_api'
     }
 
-    compileSdkVersion 36
+    compileSdkVersion 37
     ndkVersion android.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     defaultConfig {
