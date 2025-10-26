@@ -5,8 +5,8 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+//    id("com.google.gms.google-services")
+//    id("com.google.firebase.crashlytics")
 }
 
 val localPropertiesFile = rootProject.file("local.properties")
@@ -55,11 +55,6 @@ android {
         }
     }
 
-    packaging {
-        jniLibs {
-            useLegacyPackaging = true
-        }
-    }
 
     buildTypes {
         debug {
@@ -75,7 +70,7 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-
+            applicationIdSuffix = ".Firefly"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
@@ -102,7 +97,7 @@ dependencies {
     implementation(libs.smali.dexlib2) {
         exclude(group = "com.google.guava", module = "guava")
     }
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.crashlytics.ndk)
-    implementation(libs.firebase.analytics)
+//    implementation("com.google.firebase:firebase-core:21.1.1")
+//    implementation("com.google.firebase:firebase-crashlytics:18.4.0")
+//    implementation("com.google.firebase:firebase-analytics:21.3.0")
 }
