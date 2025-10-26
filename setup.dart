@@ -55,7 +55,7 @@ Future<void> main(List<String> args) async {
   final rootDir = Directory.current.path;
   final arch = _detectArch();
   final targets = _getTargets(platform, arch, results['targets']);
-  final androidArch = results['arch'] as String?;
+  final androidArch = platform == 'android' ? results['arch'] as String? : null;
   final verbose = results['verbose'] as bool;
 
   final exitCode = await _package(
@@ -193,10 +193,10 @@ Future<int> _package(
   );
 
   process.stdout.listen((data) {
-    stdout.write(utf8.decode(data));
+    stdout.write(utf8.decode(data, allowMalformed: true));
   });
   process.stderr.listen((data) {
-    stderr.write(utf8.decode(data));
+    stderr.write(utf8.decode(data, allowMalformed: true));
   });
   final exitCode = await process.exitCode;
   return exitCode;

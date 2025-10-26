@@ -124,13 +124,6 @@ class AppEnvManager extends StatelessWidget {
         );
       }
     }
-    if (globalState.isPre) {
-      return Banner(
-        message: globalState.appEnv.toUpperCase(),
-        location: BannerLocation.topEnd,
-        child: child,
-      );
-    }
     return child;
   }
 }

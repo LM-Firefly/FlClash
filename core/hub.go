@@ -12,7 +12,6 @@ import (
 	"github.com/metacubex/mihomo/component/updater"
 	"github.com/metacubex/mihomo/config"
 	"github.com/metacubex/mihomo/constant"
-	"github.com/metacubex/mihomo/constant/features"
 	cp "github.com/metacubex/mihomo/constant/provider"
 	"github.com/metacubex/mihomo/hub/executor"
 	"github.com/metacubex/mihomo/listener"
@@ -58,7 +57,7 @@ func handleStopListener() bool {
 	runLock.Lock()
 	defer runLock.Unlock()
 	isRunning = false
-	listener.StopListener()
+	listener.Cleanup()
 	resolver.ResetConnection()
 	return true
 }
@@ -70,7 +69,7 @@ func handleGetIsInit() bool {
 func handleForceGC() {
 	log.Infoln("[APP] request force GC")
 	runtime.GC()
-	if features.Android {
+	if isAndroid {
 		debug.FreeOSMemory()
 	}
 }
@@ -96,9 +95,37 @@ func handleGetProxies() ProxiesData {
 	runLock.Lock()
 	defer runLock.Unlock()
 
-	nameList := config.GetProxyNameList()
+	proxies := tunnel.Proxies()
 
-	proxies := tunnel.AllProxies()
+	// Build merged map including provider proxies
+	merged := make(map[string]constant.Proxy, len(proxies))
+	for k, v := range proxies {
+		merged[k] = v
+	}
+	for _, pd := range tunnel.Providers() {
+		for _, p := range pd.Proxies() {
+			merged[p.Name()] = p
+		}
+	}
+
+	// Build ordered name list: config-defined order first, then any remaining
+	orderedSet := make(map[string]bool, len(groupOrder))
+	var nameList []string
+	for _, name := range groupOrder {
+		if _, ok := merged[name]; ok {
+			nameList = append(nameList, name)
+			orderedSet[name] = true
+		}
+	}
+	// Append any groups not in config order (sorted alphabetically)
+	var extra []string
+	for name := range merged {
+		if !orderedSet[name] {
+			extra = append(extra, name)
+		}
+	}
+	slices.Sort(extra)
+	nameList = append(nameList, extra...)
 
 	hasGlobal := false
 
@@ -109,7 +136,7 @@ func handleGetProxies() ProxiesData {
 			hasGlobal = true
 		}
 
-		p, ok := proxies[name]
+		p, ok := merged[name]
 		if !ok || p == nil {
 			continue
 		}
@@ -121,14 +148,14 @@ func handleGetProxies() ProxiesData {
 	}
 
 	if !hasGlobal {
-		if p, ok := proxies["GLOBAL"]; ok && p != nil {
+		if p, ok := merged["GLOBAL"]; ok && p != nil {
 			allNames = append([]string{"GLOBAL"}, allNames...)
 		}
 	}
 
 	return ProxiesData{
 		All:     allNames,
-		Proxies: proxies,
+		Proxies: merged,
 	}
 }
 
@@ -138,7 +165,7 @@ func handleChangeProxy(params *ChangeProxyParams, fn func(string string)) {
 		defer runLock.Unlock()
 		groupName := params.GroupName
 		proxyName := params.ProxyName
-		proxies := tunnel.AllProxies()
+		proxies := tunnel.Proxies()
 		group, ok := proxies[groupName]
 		if !ok {
 			fn("Not found group")
@@ -170,7 +197,7 @@ func handleChangeProxy(params *ChangeProxyParams, fn func(string string)) {
 }
 
 func handleGetTraffic(onlyStatisticsProxy bool) Traffic {
-	up, down := statistic.DefaultManager.NowTraffic(onlyStatisticsProxy)
+	up, down := statistic.DefaultManager.Now()
 	return Traffic{
 		Up:   up,
 		Down: down,
@@ -178,7 +205,7 @@ func handleGetTraffic(onlyStatisticsProxy bool) Traffic {
 }
 
 func handleGetTotalTraffic(onlyStatisticsProxy bool) Traffic {
-	up, down := statistic.DefaultManager.TotalTraffic(onlyStatisticsProxy)
+	up, down := statistic.DefaultManager.Total()
 	return Traffic{
 		Up:   up,
 		Down: down,
@@ -194,7 +221,7 @@ func handleAsyncTestDelay(params *TestDelayParams, fn func(*Delay)) {
 	mBatch.Go(batchKey, func() (bool, error) {
 		testUrl := params.TestUrl
 		if testUrl == "" {
-			testUrl = constant.DefaultTestURL
+			testUrl = defaultTestURL
 		}
 		delayData := &Delay{
 			Name:  params.ProxyName,
@@ -211,8 +238,21 @@ func handleAsyncTestDelay(params *TestDelayParams, fn func(*Delay)) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*time.Duration(params.Timeout))
 		defer cancel()
 
-		proxies := tunnel.AllProxies()
-		proxy := proxies[params.ProxyName]
+		proxy := tunnel.Proxies()[params.ProxyName]
+		// Also check provider proxies if not found in main map
+		if proxy == nil {
+			for _, pd := range tunnel.Providers() {
+				for _, p := range pd.Proxies() {
+					if p.Name() == params.ProxyName {
+						proxy = p
+						break
+					}
+				}
+				if proxy != nil {
+					break
+				}
+			}
+		}
 
 		if proxy == nil {
 			fn(delayData)

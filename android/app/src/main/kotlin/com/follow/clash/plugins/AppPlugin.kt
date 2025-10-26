@@ -199,9 +199,9 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         val am = getSystemService(GlobalState.application, ActivityManager::class.java)
         val task = am?.appTasks?.firstOrNull {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                it.taskInfo.taskId == activity?.taskId
+                it.taskInfo?.taskId == activity?.taskId
             } else {
-                it.taskInfo.id == activity?.taskId
+                it.taskInfo?.id == activity?.taskId
             }
         }
         task?.setExcludeFromRecents(value ?: false)

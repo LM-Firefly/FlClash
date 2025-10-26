@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -5,6 +6,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:yaml/yaml.dart';
 
 import 'clash_config.dart';
 
@@ -193,6 +195,7 @@ extension ProfileExtension on Profile {
     if (message.isNotEmpty) {
       throw message;
     }
+    await _prefetchProviders(bytes);
     final mFile = await file;
     await tempFile.copy(mFile.path);
     await tempFile.safeDelete();
@@ -204,8 +207,61 @@ extension ProfileExtension on Profile {
     if (message.isNotEmpty) {
       throw message;
     }
+    final rawBytes = await File(path).readAsBytes();
+    await _prefetchProviders(rawBytes);
     final mFile = await file;
     await File(path).copy(mFile.path);
     return copyWith(lastUpdateDate: DateTime.now());
+  }
+
+  Future<void> _prefetchProviders(Uint8List bytes) async {
+    dynamic yamlData;
+    try {
+      yamlData = loadYaml(utf8.decode(bytes));
+    } catch (e) {
+      commonPrint.log('prefetch providers parse error: $e');
+      return;
+    }
+    if (yamlData is! Map) return;
+    await _prefetchProviderMap(yamlData['proxy-providers'], 'proxies');
+    await _prefetchProviderMap(yamlData['rule-providers'], 'rules');
+  }
+
+  Future<void> _prefetchProviderMap(dynamic providers, String type) async {
+    if (providers is! Map) return;
+    for (final entry in providers.entries) {
+      final provider = entry.value;
+      if (provider is! Map) continue;
+      final providerType =
+          provider['type']?.toString().toLowerCase().trim();
+      if (providerType != 'http') continue;
+      final url = provider['url']?.toString();
+      if (url == null || url.isEmpty) continue;
+      final name = entry.key == null ? 'provider' : entry.key.toString();
+      try {
+        await _downloadProviderFile(type: type, url: url, name: name);
+      } catch (e) {
+        throw 'Download provider $name failed: $e';
+      }
+    }
+  }
+
+  Future<void> _downloadProviderFile({
+    required String type,
+    required String url,
+    required String name,
+  }) async {
+    final response = await request.getFileResponseForUrl(url);
+    final data = response.data;
+    if (data == null) {
+      throw 'Download provider $name failed: empty data';
+    }
+    final providerPath = await appPath.getProvidersFilePath(
+      id.toString(),
+      type,
+      url,
+    );
+    final file = await File(providerPath).create(recursive: true);
+    await file.writeAsBytes(data);
   }
 }
