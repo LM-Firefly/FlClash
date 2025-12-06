@@ -74,17 +74,19 @@ jobs:
           cache-dependency-path: |
             core/go.sum
 
-      - name: Setup Flutter Master
-        if: startsWith(matrix.os, 'windows-11-arm') || startsWith(matrix.os, 'ubuntu-24.04-arm')
-        uses: subosito/flutter-action@v2
-        with:
-          channel: "master"
-          cache: true
       - name: Setup Flutter
         if: ${{ !(startsWith(matrix.os, 'windows-11-arm') || startsWith(matrix.os, 'ubuntu-24.04-arm')) }}
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          channel: stable
+          flutter-version: 3.35.7
+          cache: true
+      - name: Setup Flutter With Other
+        if: startsWith(matrix.os, 'windows-11-arm') || startsWith(matrix.os, 'ubuntu-24.04-arm')
+        uses: subosito/flutter-action@v2
+        with:
+          channel: master
+          flutter-version: 3.35.7
           cache: true
 
       - name: Get Flutter Dependency
