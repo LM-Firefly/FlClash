@@ -86,10 +86,11 @@ jobs:
         with:
           channel: "stable"
           cache: true
-      #          flutter-version: 3.29.3
 
       - name: Get Flutter Dependency
-        run: flutter pub get
+        run: |
+          flutter --version
+          flutter pub get
 
       - name: Setup
         run: dart setup.dart ${{ matrix.platform }} ${{ matrix.arch && format('--arch {0}', matrix.arch) }}
