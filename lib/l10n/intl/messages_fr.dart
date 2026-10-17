@@ -1416,6 +1416,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "portHopping": MessageLookupByLibrary.simpleMessage("Saut de port"),
     "portTip": m60,
     "portValue": m61,
+    "portableMode": MessageLookupByLibrary.simpleMessage("Mode portable"),
+    "portableModeDesc": MessageLookupByLibrary.simpleMessage(
+      "Les données de l’application restent dans le dossier data/clash à côté de l’application, pour qu’un déplacement conserve les profils. Le changement redémarre l’application.",
+    ),
+    "portableModeDisableConfirm": MessageLookupByLibrary.simpleMessage(
+      "Désactiver le mode portable ? Après le redémarrage, l’application utilise de nouveau le répertoire de données système. Le dossier data/clash reste en place.",
+    ),
+    "portableModeEnableConfirm": MessageLookupByLibrary.simpleMessage(
+      "Activer le mode portable ? Les données seront dans le dossier data/clash à côté de l’application. Si ce dossier n’a pas encore de données, elles sont copiées une fois depuis le répertoire système. L’application redémarre.",
+    ),
+    "portableModeFailed": MessageLookupByLibrary.simpleMessage(
+      "Impossible de changer le mode portable. Le dossier de l’application est peut-être en lecture seule.",
+    ),
     "ports": MessageLookupByLibrary.simpleMessage("Ports"),
     "preSharedKey": MessageLookupByLibrary.simpleMessage("Clé prépartagée"),
     "preferred": MessageLookupByLibrary.simpleMessage("Préféré"),

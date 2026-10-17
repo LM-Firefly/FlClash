@@ -1,7 +1,7 @@
 globalThis.FlClashSite = (() => {
   'use strict';
 
-  const REPO = 'https://github.com/chen08209/FlClash';
+  const REPO = 'https://github.com/LM-Firefly/FlClash';
   const FIRST_PAGE = 6;
   const MAX_STAGGER = 16;
   const TYPE_BY_TITLE = {

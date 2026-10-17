@@ -1024,6 +1024,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "portHopping": MessageLookupByLibrary.simpleMessage("端口跳跃"),
     "portTip": m60,
     "portValue": m61,
+    "portableMode": MessageLookupByLibrary.simpleMessage("便携模式"),
+    "portableModeDesc": MessageLookupByLibrary.simpleMessage(
+      "将应用数据保存在应用目录下的 data/clash 文件夹，便于随应用一起移动。切换后会自动重启应用。",
+    ),
+    "portableModeDisableConfirm": MessageLookupByLibrary.simpleMessage(
+      "关闭便携模式？重启后将恢复使用系统目录中的数据。应用目录下的 data/clash 文件夹会保留不动。",
+    ),
+    "portableModeEnableConfirm": MessageLookupByLibrary.simpleMessage(
+      "开启便携模式？数据将保存到应用目录下的 data/clash 文件夹。若该文件夹尚无数据，会从系统目录复制一次。切换后会自动重启应用。",
+    ),
+    "portableModeFailed": MessageLookupByLibrary.simpleMessage(
+      "无法切换便携模式，应用目录可能不可写。",
+    ),
     "ports": MessageLookupByLibrary.simpleMessage("端口"),
     "preSharedKey": MessageLookupByLibrary.simpleMessage("预共享密钥"),
     "preferred": MessageLookupByLibrary.simpleMessage("首选"),

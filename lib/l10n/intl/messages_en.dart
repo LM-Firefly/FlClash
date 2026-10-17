@@ -1312,6 +1312,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "portHopping": MessageLookupByLibrary.simpleMessage("Port hopping"),
     "portTip": m60,
     "portValue": m61,
+    "portableMode": MessageLookupByLibrary.simpleMessage("Portable mode"),
+    "portableModeDesc": MessageLookupByLibrary.simpleMessage(
+      "Keep app data in the data/clash folder next to the app so a moved install keeps its profiles. Switching restarts the app.",
+    ),
+    "portableModeDisableConfirm": MessageLookupByLibrary.simpleMessage(
+      "Disable portable mode? After the restart the app uses the system data directory again. Data already in the app folder is left in place.",
+    ),
+    "portableModeEnableConfirm": MessageLookupByLibrary.simpleMessage(
+      "Enable portable mode? Data will live in the data/clash folder next to the app. If that folder has no data yet, it is copied from the system directory once. The app restarts to apply this.",
+    ),
+    "portableModeFailed": MessageLookupByLibrary.simpleMessage(
+      "Couldn\'t switch portable mode. The app folder may not be writable.",
+    ),
     "ports": MessageLookupByLibrary.simpleMessage("Ports"),
     "preSharedKey": MessageLookupByLibrary.simpleMessage("Pre-shared key"),
     "preferred": MessageLookupByLibrary.simpleMessage("Preferred"),

@@ -963,5 +963,10 @@
   "preferred": "Preferido",
   "addToLocalProxies": "Añadir a proxies locales",
   "addedToLocalProxies": "{name} añadido a proxies locales",
-  "alreadyInLocalProxies": "{name} ya está en proxies locales"
+  "alreadyInLocalProxies": "{name} ya está en proxies locales",
+  "portableMode": "Modo portátil",
+  "portableModeDesc": "Los datos de la aplicación se guardan en la carpeta data/clash junto a la aplicación, para que al moverla se conserven los perfiles. Cambiarlo reinicia la aplicación.",
+  "portableModeEnableConfirm": "¿Activar el modo portátil? Los datos se guardarán en la carpeta data/clash junto a la aplicación. Si esa carpeta aún no tiene datos, se copian una vez desde el directorio del sistema. La aplicación se reiniciará.",
+  "portableModeDisableConfirm": "¿Desactivar el modo portátil? Tras el reinicio la aplicación volverá a usar el directorio de datos del sistema. La carpeta data/clash se deja como está.",
+  "portableModeFailed": "No se pudo cambiar el modo portátil. Puede que la carpeta de la aplicación no sea escribible."
 }

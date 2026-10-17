@@ -963,5 +963,10 @@
   "preferred": "優先",
   "addToLocalProxies": "ローカルプロキシに追加",
   "addedToLocalProxies": "{name} をローカルプロキシに追加しました",
-  "alreadyInLocalProxies": "{name} はすでにローカルプロキシにあります"
+  "alreadyInLocalProxies": "{name} はすでにローカルプロキシにあります",
+  "portableMode": "ポータブルモード",
+  "portableModeDesc": "アプリデータをアプリと同じ data/clash フォルダーに保存し、移動してもプロファイルを保てます。切り替えるとアプリが再起動します。",
+  "portableModeEnableConfirm": "ポータブルモードを有効にしますか？データはアプリと同じ data/clash フォルダーに保存されます。そこにまだデータがない場合は、システムディレクトリーから一度コピーされます。切り替えるとアプリが再起動します。",
+  "portableModeDisableConfirm": "ポータブルモードを無効にしますか？再起動後は再びシステムのデータディレクトリーを使います。アプリフォルダー内の data/clash は残ります。",
+  "portableModeFailed": "ポータブルモードを切り替えられませんでした。アプリフォルダーが書き込みできない可能性があります。"
 }

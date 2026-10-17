@@ -8052,6 +8052,56 @@ class AppLocalizations {
       args: [name],
     );
   }
+
+  /// `Portable mode`
+  String get portableMode {
+    return Intl.message(
+      'Portable mode',
+      name: 'portableMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keep app data in the data/clash folder next to the app so a moved install keeps its profiles. Switching restarts the app.`
+  String get portableModeDesc {
+    return Intl.message(
+      'Keep app data in the data/clash folder next to the app so a moved install keeps its profiles. Switching restarts the app.',
+      name: 'portableModeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable portable mode? Data will live in the data/clash folder next to the app. If that folder has no data yet, it is copied from the system directory once. The app restarts to apply this.`
+  String get portableModeEnableConfirm {
+    return Intl.message(
+      'Enable portable mode? Data will live in the data/clash folder next to the app. If that folder has no data yet, it is copied from the system directory once. The app restarts to apply this.',
+      name: 'portableModeEnableConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disable portable mode? After the restart the app uses the system data directory again. Data already in the app folder is left in place.`
+  String get portableModeDisableConfirm {
+    return Intl.message(
+      'Disable portable mode? After the restart the app uses the system data directory again. Data already in the app folder is left in place.',
+      name: 'portableModeDisableConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn't switch portable mode. The app folder may not be writable.`
+  String get portableModeFailed {
+    return Intl.message(
+      'Couldn\'t switch portable mode. The app folder may not be writable.',
+      name: 'portableModeFailed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

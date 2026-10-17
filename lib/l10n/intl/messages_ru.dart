@@ -1372,6 +1372,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "portHopping": MessageLookupByLibrary.simpleMessage("Перескок портов"),
     "portTip": m60,
     "portValue": m61,
+    "portableMode": MessageLookupByLibrary.simpleMessage("Портативный режим"),
+    "portableModeDesc": MessageLookupByLibrary.simpleMessage(
+      "Данные приложения хранятся в папке data/clash рядом с приложением, чтобы перенос установки сохранял профили. Переключение перезапускает приложение.",
+    ),
+    "portableModeDisableConfirm": MessageLookupByLibrary.simpleMessage(
+      "Выключить портативный режим? После перезапуска приложение снова будет использовать системный каталог данных. Папка data/clash останется на месте.",
+    ),
+    "portableModeEnableConfirm": MessageLookupByLibrary.simpleMessage(
+      "Включить портативный режим? Данные будут храниться в папке data/clash рядом с приложением. Если там ещё нет данных, они один раз копируются из системного каталога. Приложение перезапустится.",
+    ),
+    "portableModeFailed": MessageLookupByLibrary.simpleMessage(
+      "Не удалось переключить портативный режим. Возможно, папка приложения недоступна для записи.",
+    ),
     "ports": MessageLookupByLibrary.simpleMessage("Порты"),
     "preSharedKey": MessageLookupByLibrary.simpleMessage("Общий ключ"),
     "preferred": MessageLookupByLibrary.simpleMessage("Предпочтительный"),

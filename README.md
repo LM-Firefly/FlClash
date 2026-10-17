@@ -8,9 +8,9 @@ A multi-platform proxy client based on ClashMeta. Simple to use, open source and
 
 **English** · [简体中文](README_zh_CN.md)
 
-[![Release](https://img.shields.io/github/v/release/chen08209/FlClash?style=flat-square&label=release)](https://github.com/chen08209/FlClash/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases)
-[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/LM-Firefly/FlClash?style=flat-square&label=release)](https://github.com/LM-Firefly/FlClash/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/LM-Firefly/FlClash/total?style=flat-square&logo=github)](https://github.com/LM-Firefly/FlClash/releases)
+[![License](https://img.shields.io/github/license/LM-Firefly/FlClash?style=flat-square)](LICENSE)
 [![Telegram](https://img.shields.io/badge/Telegram-channel-26A5E4?style=flat-square&logo=telegram&logoColor=white)](https://t.me/FlClash)
 
 [Website](https://chen08209.github.io/FlClash) · [Download](#download) · [Changelog](CHANGELOG.md) · [Build from source](#build-from-source)
@@ -40,7 +40,7 @@ A multi-platform proxy client based on ClashMeta. Simple to use, open source and
 
 ## Download
 
-Get the latest build from [GitHub Releases](https://github.com/chen08209/FlClash/releases/latest), or open the
+Get the latest build from [GitHub Releases](https://github.com/LM-Firefly/FlClash/releases/latest), or open the
 [website](https://chen08209.github.io/FlClash#download), which picks the right file for your device.
 
 | Platform | Packages | Notes |
@@ -52,7 +52,7 @@ Get the latest build from [GitHub Releases](https://github.com/chen08209/FlClash
 
 <p>
   <a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" height="56"></a>
-  <a href="https://github.com/chen08209/FlClash/releases/latest"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" height="56"></a>
+  <a href="https://github.com/LM-Firefly/FlClash/releases/latest"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" height="56"></a>
 </p>
 
 **Homebrew**
@@ -108,7 +108,7 @@ You need [Flutter](https://docs.flutter.dev/get-started/install) 3.47 (release b
 host, except Android, which builds anywhere.
 
 ```bash
-git clone --recursive https://github.com/chen08209/FlClash.git
+git clone --recursive https://github.com/LM-Firefly/FlClash.git
 cd FlClash
 flutter pub get
 dart setup.dart android   # or windows, macos, linux
@@ -129,7 +129,7 @@ Run `dart setup.dart --help` for the remaining options, such as `--targets` to b
 
 Starring the repository is the easiest way to support the project. Questions and announcements go to the
 [Telegram channel](https://t.me/FlClash); bugs and feature requests go to
-[GitHub Issues](https://github.com/chen08209/FlClash/issues).
+[GitHub Issues](https://github.com/LM-Firefly/FlClash/issues).
 
 <a href="https://star-history.com/#chen08209/FlClash&Date">
   <picture>

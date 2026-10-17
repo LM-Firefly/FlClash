@@ -1106,6 +1106,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "portHopping": MessageLookupByLibrary.simpleMessage("포트 호핑"),
     "portTip": m60,
     "portValue": m61,
+    "portableMode": MessageLookupByLibrary.simpleMessage("포터블 모드"),
+    "portableModeDesc": MessageLookupByLibrary.simpleMessage(
+      "앱 데이터를 앱 옆 data/clash 폴더에 보관해 옮겨도 프로필을 유지합니다. 전환하면 앱이 다시 시작됩니다.",
+    ),
+    "portableModeDisableConfirm": MessageLookupByLibrary.simpleMessage(
+      "포터블 모드를 끄시겠습니까? 다시 시작한 후에는 시스템 데이터 디렉터리를 다시 사용합니다. 앱 폴더의 data/clash는 그대로 둡니다.",
+    ),
+    "portableModeEnableConfirm": MessageLookupByLibrary.simpleMessage(
+      "포터블 모드를 켜시겠습니까? 데이터는 앱 옆 data/clash 폴더에 저장됩니다. 아직 데이터가 없으면 시스템 디렉터리에서 한 번 복사됩니다. 전환하면 앱이 다시 시작됩니다.",
+    ),
+    "portableModeFailed": MessageLookupByLibrary.simpleMessage(
+      "포터블 모드를 전환하지 못했습니다. 앱 폴더에 쓰기 권한이 없을 수 있습니다.",
+    ),
     "ports": MessageLookupByLibrary.simpleMessage("포트"),
     "preSharedKey": MessageLookupByLibrary.simpleMessage("사전 공유 키"),
     "preferred": MessageLookupByLibrary.simpleMessage("우선"),
