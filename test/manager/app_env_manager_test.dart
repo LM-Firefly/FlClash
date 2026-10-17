@@ -9,7 +9,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() {
-    globalState.appEnv = 'stable';
+    // Non-stable is the channel that used to show the env badge.
+    globalState.appEnv = 'pre';
   });
 
   Future<void> pump(WidgetTester tester, {required bool safeMode}) async {
@@ -24,7 +25,7 @@ void main() {
     );
   }
 
-  testWidgets('a stable build carries no banner', (tester) async {
+  testWidgets('a non-stable build carries no env badge', (tester) async {
     await pump(tester, safeMode: false);
 
     expect(find.byKey(const Key('child')), findsOneWidget);

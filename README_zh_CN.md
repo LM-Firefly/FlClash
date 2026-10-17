@@ -8,9 +8,9 @@
 
 [English](README.md) · **简体中文**
 
-[![Release](https://img.shields.io/github/v/release/chen08209/FlClash?style=flat-square&label=release)](https://github.com/chen08209/FlClash/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases)
-[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/LM-Firefly/FlClash?style=flat-square&label=release)](https://github.com/LM-Firefly/FlClash/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/LM-Firefly/FlClash/total?style=flat-square&logo=github)](https://github.com/LM-Firefly/FlClash/releases)
+[![License](https://img.shields.io/github/license/LM-Firefly/FlClash?style=flat-square)](LICENSE)
 [![Telegram](https://img.shields.io/badge/Telegram-channel-26A5E4?style=flat-square&logo=telegram&logoColor=white)](https://t.me/FlClash)
 
 [官网](https://chen08209.github.io/FlClash/zh) · [下载](#下载) · [更新日志](CHANGELOG.md) · [从源码构建](#从源码构建)
@@ -37,7 +37,7 @@
 
 ## 下载
 
-从 [GitHub Releases](https://github.com/chen08209/FlClash/releases/latest) 获取最新版本，或打开
+从 [GitHub Releases](https://github.com/LM-Firefly/FlClash/releases/latest) 获取最新版本，或打开
 [官网](https://chen08209.github.io/FlClash/zh#download)，它会自动为你的设备选好安装包。
 
 | 平台 | 安装包 | 说明 |
@@ -49,7 +49,7 @@
 
 <p>
   <a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" height="56"></a>
-  <a href="https://github.com/chen08209/FlClash/releases/latest"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" height="56"></a>
+  <a href="https://github.com/LM-Firefly/FlClash/releases/latest"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" height="56"></a>
 </p>
 
 **Homebrew**
@@ -96,7 +96,7 @@ adb shell am start -a com.follow.clash.action.TOGGLE
 以及通过 rustup 安装的 [Rust](https://rustup.rs/)。桌面端需要在对应系统上构建，Android 在任意系统上都能构建。
 
 ```bash
-git clone --recursive https://github.com/chen08209/FlClash.git
+git clone --recursive https://github.com/LM-Firefly/FlClash.git
 cd FlClash
 flutter pub get
 dart setup.dart android   # 或 windows、macos、linux
@@ -116,7 +116,7 @@ dart setup.dart android   # 或 windows、macos、linux
 ## 支持
 
 给仓库点一个 Star 是支持项目最简单的方式。问题讨论和更新通知请关注 [Telegram 频道](https://t.me/FlClash)，
-Bug 与功能建议请提交到 [GitHub Issues](https://github.com/chen08209/FlClash/issues)。
+Bug 与功能建议请提交到 [GitHub Issues](https://github.com/LM-Firefly/FlClash/issues)。
 
 <a href="https://star-history.com/#chen08209/FlClash&Date">
   <picture>

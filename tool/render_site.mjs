@@ -25,7 +25,10 @@ const versions = parseChangelog(readFileSync(join(out, 'CHANGELOG.md'), 'utf8'))
 const releasePath = join(out, 'release.json');
 const release = existsSync(releasePath) ? JSON.parse(readFileSync(releasePath, 'utf8')) : null;
 const latest = release?.tag
-  ? { version: release.tag.replace(/^v/, ''), date: (release.publishedAt || '').slice(0, 10) }
+  ? {
+      version: release.tag.replace(/^v/, '').split('+')[0],
+      date: (release.publishedAt || '').slice(0, 10),
+    }
   : versions.find((v) => !v.tag.includes('-'));
 
 function replaceOnce(html, pattern, replacement) {

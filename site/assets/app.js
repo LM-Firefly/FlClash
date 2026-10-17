@@ -191,7 +191,8 @@
     if (meta && meta.tag) {
       state.release = {
         tag: meta.tag,
-        version: meta.tag.replace(/^v/, ''),
+        // Artifact names use the semver only; the tag carries the +build stamp.
+        version: meta.tag.replace(/^v/, '').split('+')[0],
         date: (meta.publishedAt || '').slice(0, 10),
         assets: new Map((meta.assets || []).map((asset) => [asset.name, asset])),
         stars: meta.stars,

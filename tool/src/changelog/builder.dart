@@ -60,7 +60,8 @@ class ChangelogBuilder {
     final versions = <ChangelogVersion>[];
     final commitIdsByTag = <String, Set<String>>{};
 
-    if (pending != null && !git.tagExists(pending.tag)) {
+    // Pending always wins for its tag so a rerun can overwrite the notes.
+    if (pending != null) {
       final commits = git.commits(
         from: stable.isEmpty ? boundaryTag?.name : stable.first.name,
         to: 'HEAD',
@@ -79,6 +80,9 @@ class ChangelogBuilder {
 
     for (var index = 0; index < stable.length; index++) {
       final tag = stable[index];
+      if (pending != null && tag.name == pending.tag) {
+        continue;
+      }
       final previous = index + 1 < stable.length
           ? stable[index + 1].name
           : boundaryTag?.name;

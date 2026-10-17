@@ -127,13 +127,13 @@ void main() {
     expect(versions.first.isEmpty, isTrue);
   });
 
-  test('a pending version is skipped once its tag exists', () {
+  test('a pending version overwrites the entry for its existing tag', () {
     final versions = build(
       pending: const PendingVersion(version: '1.1.0', date: '2026-02-03'),
     ).changelog.versions;
 
     expect(versions.map((version) => version.tag), ['v1.1.0']);
-    expect(versions.single.date, '2026-01-02');
+    expect(versions.single.date, '2026-02-03');
   });
 
   test('a release tag on another branch is not reachable from this one', () {
