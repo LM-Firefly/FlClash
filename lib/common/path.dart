@@ -15,7 +15,16 @@ class AppPath {
 
   @visibleForTesting
   static Future<Directory> Function() supportDirectory =
-      getApplicationSupportDirectory;
+      resolveSupportDirectory;
+
+  /// Portable mode is read from a marker file beside the executable, not from preferences, so the data root is known before any store opens.
+  static Future<Directory> resolveSupportDirectory() async {
+    if (portableMode.enabled) {
+      await portableMode.ensureLocalData();
+      return portableMode.dataDirectory;
+    }
+    return getApplicationSupportDirectory();
+  }
 
   @visibleForTesting
   static Future<Directory> Function() temporaryDirectory =

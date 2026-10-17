@@ -939,5 +939,10 @@
   "customImportDroppedSubRules": "{count, plural, other{自定义配置不支持子规则，已丢弃 {label} 条 SUB-RULE 规则}}",
   "autoInclude": "自动包含",
   "allReferencedProxies": "全部被引用的代理",
-  "allReferencedProxyProviders": "全部被引用的代理集"
+  "allReferencedProxyProviders": "全部被引用的代理集",
+  "portableMode": "便携模式",
+  "portableModeDesc": "将应用数据保存在应用目录下的 data/clash 文件夹，便于随应用一起移动。切换后会自动重启应用。",
+  "portableModeEnableConfirm": "开启便携模式？数据将保存到应用目录下的 data/clash 文件夹。若该文件夹尚无数据，会从系统目录复制一次。切换后会自动重启应用。",
+  "portableModeDisableConfirm": "关闭便携模式？重启后将恢复使用系统目录中的数据。应用目录下的 data/clash 文件夹会保留不动。",
+  "portableModeFailed": "无法切换便携模式，应用目录可能不可写。"
 }

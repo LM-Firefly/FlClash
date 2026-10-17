@@ -1109,6 +1109,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "portHopping": MessageLookupByLibrary.simpleMessage("ポートホッピング"),
     "portTip": m57,
     "portValue": m58,
+    "portableMode": MessageLookupByLibrary.simpleMessage("ポータブルモード"),
+    "portableModeDesc": MessageLookupByLibrary.simpleMessage(
+      "アプリデータをアプリと同じ data/clash フォルダーに保存し、移動してもプロファイルを保てます。切り替えるとアプリが再起動します。",
+    ),
+    "portableModeDisableConfirm": MessageLookupByLibrary.simpleMessage(
+      "ポータブルモードを無効にしますか？再起動後は再びシステムのデータディレクトリーを使います。アプリフォルダー内の data/clash は残ります。",
+    ),
+    "portableModeEnableConfirm": MessageLookupByLibrary.simpleMessage(
+      "ポータブルモードを有効にしますか？データはアプリと同じ data/clash フォルダーに保存されます。そこにまだデータがない場合は、システムディレクトリーから一度コピーされます。切り替えるとアプリが再起動します。",
+    ),
+    "portableModeFailed": MessageLookupByLibrary.simpleMessage(
+      "ポータブルモードを切り替えられませんでした。アプリフォルダーが書き込みできない可能性があります。",
+    ),
     "ports": MessageLookupByLibrary.simpleMessage("ポート"),
     "preSharedKey": MessageLookupByLibrary.simpleMessage("事前共有鍵"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前提条件"),

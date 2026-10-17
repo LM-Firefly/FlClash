@@ -939,5 +939,10 @@
   "customImportDroppedSubRules": "{count, plural, =1{1 SUB-RULE rule was dropped, since custom profiles do not support sub-rules} other{{label} SUB-RULE rules were dropped, since custom profiles do not support sub-rules}}",
   "autoInclude": "Auto-include",
   "allReferencedProxies": "All referenced proxies",
-  "allReferencedProxyProviders": "All referenced proxy providers"
+  "allReferencedProxyProviders": "All referenced proxy providers",
+  "portableMode": "Portable mode",
+  "portableModeDesc": "Keep app data in the data/clash folder next to the app so a moved install keeps its profiles. Switching restarts the app.",
+  "portableModeEnableConfirm": "Enable portable mode? Data will live in the data/clash folder next to the app. If that folder has no data yet, it is copied from the system directory once. The app restarts to apply this.",
+  "portableModeDisableConfirm": "Disable portable mode? After the restart the app uses the system data directory again. Data already in the app folder is left in place.",
+  "portableModeFailed": "Couldn't switch portable mode. The app folder may not be writable."
 }

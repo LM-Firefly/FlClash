@@ -939,5 +939,10 @@
   "customImportDroppedSubRules": "{count, plural, =1{1 règle SUB-RULE a été abandonnée, car les profils personnalisés ne prennent pas en charge les sous-règles} other{{label} règles SUB-RULE ont été abandonnées, car les profils personnalisés ne prennent pas en charge les sous-règles}}",
   "autoInclude": "Inclure automatiquement",
   "allReferencedProxies": "Tous les proxys référencés",
-  "allReferencedProxyProviders": "Tous les fournisseurs de proxys référencés"
+  "allReferencedProxyProviders": "Tous les fournisseurs de proxys référencés",
+  "portableMode": "Mode portable",
+  "portableModeDesc": "Les données de l’application restent dans le dossier data/clash à côté de l’application, pour qu’un déplacement conserve les profils. Le changement redémarre l’application.",
+  "portableModeEnableConfirm": "Activer le mode portable ? Les données seront dans le dossier data/clash à côté de l’application. Si ce dossier n’a pas encore de données, elles sont copiées une fois depuis le répertoire système. L’application redémarre.",
+  "portableModeDisableConfirm": "Désactiver le mode portable ? Après le redémarrage, l’application utilise de nouveau le répertoire de données système. Le dossier data/clash reste en place.",
+  "portableModeFailed": "Impossible de changer le mode portable. Le dossier de l’application est peut-être en lecture seule."
 }

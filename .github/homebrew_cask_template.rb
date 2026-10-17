@@ -7,12 +7,12 @@ cask "flclash" do
     sha256 arm:   "ARM_SHA256",
            intel: "AMD_SHA256"
 
-    url "https://github.com/chen08209/FlClash/releases/download/v#{version}/FlClash-#{version}-macos-#{arch}.dmg"
+    url "https://github.com/LM-Firefly/FlClash/releases/download/v#{version}/FlClash-#{version}-macos-#{arch}.dmg"
   end
 
   name "FlClash"
   desc "Multi-platform proxy client based on ClashMeta"
-  homepage "https://github.com/chen08209/FlClash"
+  homepage "https://github.com/LM-Firefly/FlClash"
 
   livecheck do
     url :url

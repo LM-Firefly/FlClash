@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/features/form/form.dart';
@@ -252,6 +253,64 @@ ConfigToggleItem _appSettingToggle({
   );
 }
 
+class PortableModeItem extends ConsumerStatefulWidget {
+  const PortableModeItem({super.key});
+
+  @override
+  ConsumerState<PortableModeItem> createState() => _PortableModeItemState();
+}
+
+class _PortableModeItemState extends ConsumerState<PortableModeItem> {
+  bool _value = portableMode.enabled;
+
+  Future<void> _toggle(bool value) async {
+    final appLocalizations = context.appLocalizations;
+    final confirmed = await dialogs.showMessage(
+      message: TextSpan(
+        text: value
+            ? appLocalizations.portableModeEnableConfirm
+            : appLocalizations.portableModeDisableConfirm,
+      ),
+    );
+    if (confirmed != true || !mounted) {
+      return;
+    }
+    try {
+      if (value) {
+        await portableMode.enable();
+      } else {
+        await portableMode.disable();
+      }
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      dialogs.showNotifier(
+        appLocalizations.portableModeFailed,
+        level: MessageLevel.error,
+      );
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
+    setState(() => _value = portableMode.enabled);
+    await relaunchApplication();
+    await ref.read(systemActionProvider.notifier).handleExit(false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem.toggle(
+      title: Text(context.appLocalizations.portableMode),
+      value: _value,
+      onChanged: (value) {
+        unawaited(_toggle(value));
+      },
+    );
+  }
+}
+
 class GeneralView extends ConsumerWidget {
   const GeneralView({super.key});
 
@@ -268,6 +327,7 @@ class GeneralView extends ConsumerWidget {
           select: (state) => state.silentLaunch,
           update: (state, value) => state.copyWith(silentLaunch: value),
         ),
+        if (system.isWindows) const PortableModeItem(),
       ],
       _appSettingToggle(
         title: (l) => l.autoRun,
@@ -443,6 +503,7 @@ class GeneralView extends ConsumerWidget {
             items: _startupItems(appLocalizations),
             footer: [
               if (system.isDesktop) appLocalizations.silentLaunchDesc,
+              if (system.isWindows) appLocalizations.portableModeDesc,
               appLocalizations.autoRunDesc,
               appLocalizations.onDemandDesc,
             ].join('\n'),

@@ -939,5 +939,10 @@
   "customImportDroppedSubRules": "{count, plural, =1{Se descartó 1 regla SUB-RULE, porque los perfiles personalizados no admiten subreglas} other{Se descartaron {label} reglas SUB-RULE, porque los perfiles personalizados no admiten subreglas}}",
   "autoInclude": "Incluir automáticamente",
   "allReferencedProxies": "Todos los proxies referenciados",
-  "allReferencedProxyProviders": "Todos los proveedores de proxies referenciados"
+  "allReferencedProxyProviders": "Todos los proveedores de proxies referenciados",
+  "portableMode": "Modo portátil",
+  "portableModeDesc": "Los datos de la aplicación se guardan en la carpeta data/clash junto a la aplicación, para que al moverla se conserven los perfiles. Cambiarlo reinicia la aplicación.",
+  "portableModeEnableConfirm": "¿Activar el modo portátil? Los datos se guardarán en la carpeta data/clash junto a la aplicación. Si esa carpeta aún no tiene datos, se copian una vez desde el directorio del sistema. La aplicación se reiniciará.",
+  "portableModeDisableConfirm": "¿Desactivar el modo portátil? Tras el reinicio la aplicación volverá a usar el directorio de datos del sistema. La carpeta data/clash se deja como está.",
+  "portableModeFailed": "No se pudo cambiar el modo portátil. Puede que la carpeta de la aplicación no sea escribible."
 }
