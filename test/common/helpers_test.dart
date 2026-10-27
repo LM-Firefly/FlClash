@@ -133,6 +133,36 @@ void main() {
     test('handles missing minor/patch', () {
       expect(compareVersions('1', '1.0.0'), 0);
     });
+
+    test('prerelease ranks below its own release', () {
+      expect(compareVersions('0.9.3-pre.1', '0.9.3'), lessThan(0));
+      expect(compareVersions('0.9.3', '0.9.3-pre.1'), greaterThan(0));
+    });
+
+    test('prerelease outranks the previous patch', () {
+      expect(compareVersions('0.9.3-pre.1', '0.9.2'), greaterThan(0));
+    });
+
+    test('prerelease compares identifier by identifier', () {
+      expect(compareVersions('0.9.3-pre.1', '0.9.3-pre.2'), lessThan(0));
+      expect(compareVersions('v0.9.3-pre.1', '0.9.3-pre.1'), 0);
+    });
+
+    test('numeric prerelease identifiers compare as numbers', () {
+      expect(compareVersions('1.0.0-beta.2', '1.0.0-beta.11'), lessThan(0));
+    });
+
+    test('numeric prerelease identifiers rank below words', () {
+      expect(compareVersions('1.0.0-alpha.1', '1.0.0-alpha.beta'), lessThan(0));
+    });
+
+    test('shorter prerelease ranks below its longer form', () {
+      expect(compareVersions('1.0.0-alpha', '1.0.0-alpha.1'), lessThan(0));
+    });
+
+    test('non-numeric build metadata does not throw', () {
+      expect(compareVersions('1.0.0+abc', '1.0.0+abc'), 0);
+    });
   });
 
   group('getViewMode', () {
